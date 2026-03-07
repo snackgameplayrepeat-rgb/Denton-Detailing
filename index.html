@@ -1,0 +1,2427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Denton Detailing | Tipp City, OH</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #020617;
+      --card-bg: rgba(15, 23, 42, 0.9);
+      --accent: #22c1c3;
+      --accent-soft: rgba(34, 193, 195, 0.15);
+      --accent-2: #a855f7;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --border-subtle: rgba(148, 163, 184, 0.35);
+      --danger: #f97373;
+      --success: #4ade80;
+      --warning: #facc15;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #0f172a 0, #020617 55%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .app-shell {
+      width: 100%;
+      max-width: 1200px;
+      background: radial-gradient(
+            circle at top left,
+            rgba(56, 189, 248, 0.12),
+            transparent 55%
+          ),
+          radial-gradient(
+            circle at bottom right,
+            rgba(168, 85, 247, 0.12),
+            transparent 55%
+          ),
+          rgba(15, 23, 42, 0.96);
+      border-radius: 1.75rem;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      box-shadow:
+        0 24px 80px rgba(15, 23, 42, 0.9),
+        0 0 0 1px rgba(15, 23, 42, 0.9);
+      padding: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .app-shell::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        circle at top center,
+        rgba(56, 189, 248, 0.12),
+        transparent 60%
+      );
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1.5rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+    }
+
+    .brand-mark {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      background:
+        radial-gradient(circle at 30% 30%, #e0f2fe, transparent 55%),
+        conic-gradient(
+          from 210deg,
+          #22c1c3,
+          #a855f7,
+          #22c1c3
+        );
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow:
+        0 0 0 1px rgba(15, 23, 42, 0.9),
+        0 12px 30px rgba(15, 23, 42, 0.9);
+    }
+
+    .brand-mark span {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: 0.08em;
+    }
+
+    .brand-text h1 {
+      font-size: 1.1rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #e5e7eb;
+    }
+
+    .brand-text p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .header-cta {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .pill {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      padding: 0.4rem 0.9rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: radial-gradient(
+        circle at top left,
+        rgba(56, 189, 248, 0.12),
+        transparent 55%
+      );
+    }
+
+    .pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.25);
+    }
+
+    .primary-cta {
+      border-radius: 999px;
+      border: none;
+      padding: 0.55rem 1.2rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #22c1c3, #a855f7);
+      color: #0b1120;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      cursor: pointer;
+      box-shadow:
+        0 12px 30px rgba(15, 23, 42, 0.9),
+        0 0 0 1px rgba(15, 23, 42, 0.9);
+    }
+
+    .primary-cta span.icon {
+      font-size: 1rem;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.1fr);
+      gap: 1.5rem;
+      align-items: stretch;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      justify-content: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-kicker {
+      font-size: 0.8rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .hero-kicker::before {
+      content: "";
+      width: 32px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--accent));
+      opacity: 0.8;
+    }
+
+    .hero-title {
+      font-size: clamp(2.1rem, 3vw, 2.6rem);
+      line-height: 1.1;
+      letter-spacing: 0.02em;
+    }
+
+    .hero-title span {
+      background: linear-gradient(to right, #22c1c3, #a855f7);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      max-width: 30rem;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .hero-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: radial-gradient(
+        circle at top left,
+        rgba(15, 23, 42, 0.9),
+        rgba(15, 23, 42, 0.7)
+      );
+    }
+
+    .hero-meta span strong {
+      color: #e5e7eb;
+      font-weight: 500;
+    }
+
+    .hero-footnote {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-top: 0.25rem;
+    }
+
+    .hero-footnote-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--accent-2);
+      box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.25);
+    }
+
+    .hero-card {
+      background: radial-gradient(
+          circle at top left,
+          rgba(56, 189, 248, 0.18),
+          transparent 55%
+        ),
+        radial-gradient(
+          circle at bottom right,
+          rgba(168, 85, 247, 0.2),
+          transparent 55%
+        ),
+        var(--card-bg);
+      border-radius: 1.5rem;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .hero-card::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at top, rgba(56, 189, 248, 0.16), transparent 55%),
+        radial-gradient(
+          circle at bottom,
+          rgba(168, 85, 247, 0.18),
+          transparent 55%
+        );
+      opacity: 0.7;
+      pointer-events: none;
+      mix-blend-mode: screen;
+    }
+
+    .hero-card-inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      height: 100%;
+    }
+
+    .hero-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .hero-card-title {
+      font-size: 0.9rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #e5e7eb;
+    }
+
+    .hero-card-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .hero-card-badge {
+      border-radius: 999px;
+      padding: 0.3rem 0.7rem;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      border: 1px solid rgba(34, 197, 94, 0.5);
+      color: #bbf7d0;
+      background: radial-gradient(
+        circle at top left,
+        rgba(34, 197, 94, 0.18),
+        transparent 55%
+      );
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .hero-card-badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #4ade80;
+      box-shadow: 0 0 0 4px rgba(74, 222, 128, 0.25);
+    }
+
+    .hero-card-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.1fr);
+      gap: 0.9rem;
+      align-items: flex-start;
+      flex: 1;
+    }
+
+    .hero-card-section {
+      background: radial-gradient(
+        circle at top left,
+        rgba(15, 23, 42, 0.9),
+        rgba(15, 23, 42, 0.7)
+      );
+      border-radius: 1rem;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card-section h3 {
+      font-size: 0.8rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .hero-card-section strong {
+      font-size: 0.9rem;
+      color: #e5e7eb;
+    }
+
+    .hero-card-section p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .hero-card-section-footer {
+      margin-top: auto;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .hero-card-section-footer span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .hero-card-section-footer span.badge-soft {
+      border-radius: 999px;
+      padding: 0.25rem 0.6rem;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: rgba(15, 23, 42, 0.9);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .hero-card-section-footer span.badge-soft strong {
+      color: #e5e7eb;
+      font-weight: 500;
+    }
+
+    .hero-card-section-footer span.icon {
+      font-size: 0.9rem;
+    }
+
+    .hero-card-divider {
+      height: 1px;
+      background: linear-gradient(
+        to right,
+        transparent,
+        rgba(148, 163, 184, 0.6),
+        transparent
+      );
+      margin: 0.25rem 0;
+    }
+
+    .hero-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .hero-card-footer span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .hero-card-footer span strong {
+      color: #e5e7eb;
+      font-weight: 500;
+    }
+
+    .hero-card-footer .cta-link {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #e5e7eb;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      cursor: pointer;
+    }
+
+    .hero-card-footer .cta-link span.icon {
+      font-size: 0.9rem;
+    }
+
+    .layout-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.1fr);
+      gap: 1.25rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .panel {
+      background: radial-gradient(
+        circle at top left,
+        rgba(15, 23, 42, 0.9),
+        rgba(15, 23, 42, 0.7)
+      );
+      border-radius: 1.5rem;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      padding: 1.1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .panel-title {
+      font-size: 0.85rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #e5e7eb;
+    }
+
+    .panel-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .panel-tag {
+      border-radius: 999px;
+      padding: 0.25rem 0.7rem;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .panel-tag-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 4px rgba(34, 193, 195, 0.25);
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.75rem;
+      font-size: 0.8rem;
+    }
+
+    .pricing-card {
+      border-radius: 1rem;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: radial-gradient(
+        circle at top left,
+        rgba(15, 23, 42, 0.95),
+        rgba(15, 23, 42, 0.8)
+      );
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pricing-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.4rem;
+    }
+
+    .pricing-name {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #e5e7eb;
+    }
+
+    .pricing-pill {
+      border-radius: 999px;
+      padding: 0.2rem 0.55rem;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      color: var(--text-muted);
+    }
+
+    .pricing-pill.popular {
+      border-color: rgba(34, 197, 94, 0.7);
+      color: #bbf7d0;
+      background: radial-gradient(
+        circle at top left,
+        rgba(34, 197, 94, 0.18),
+        transparent 55%
+      );
+    }
+
+    .pricing-price {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #e5e7eb;
+    }
+
+    .pricing-price span {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .pricing-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .pricing-list {
+      margin-top: 0.25rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .pricing-list span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .pricing-list span::before {
+      content: "•";
+      color: rgba(148, 163, 184, 0.9);
+      font-size: 0.8rem;
+    }
+
+    .pricing-footer {
+      margin-top: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .pricing-footer span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .pricing-footer strong {
+      color: #e5e7eb;
+      font-weight: 500;
+    }
+
+    .pricing-footer .cta-link {
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #e5e7eb;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .pricing-footer .cta-link span.icon {
+      font-size: 0.85rem;
+    }
+
+    .calendar {
+      border-radius: 1rem;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: radial-gradient(
+        circle at top left,
+        rgba(15, 23, 42, 0.95),
+        rgba(15, 23, 42, 0.8)
+      );
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      font-size: 0.8rem;
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .calendar-month {
+      font-weight: 500;
+      color: #e5e7eb;
+    }
+
+    .calendar-controls {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .calendar-btn {
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: rgba(15, 23, 42, 0.9);
+      color: #e5e7eb;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 0.25rem;
+    }
+
+    .calendar-day-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .calendar-cell {
+      border-radius: 0.6rem;
+      padding: 0.3rem 0.1rem;
+      text-align: center;
+      cursor: pointer;
+      border: 1px solid transparent;
+      position: relative;
+      min-height: 32px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.1rem;
+    }
+
+    .calendar-cell.disabled {
+      opacity: 0.25;
+      cursor: default;
+    }
+
+    .calendar-cell .date {
+      font-size: 0.75rem;
+      color: #e5e7eb;
+    }
+
+    .calendar-cell .slots {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+    }
+
+    .calendar-cell.available {
+      border-color: rgba(34, 197, 94, 0.6);
+      background: radial-gradient(
+        circle at top left,
+        rgba(34, 197, 94, 0.18),
+        transparent 55%
+      );
+    }
+
+    .calendar-cell.selected {
+      border-color: rgba(56, 189, 248, 0.9);
+      background: radial-gradient(
+        circle at top left,
+        rgba(56, 189, 248, 0.2),
+        transparent 55%
+      );
+    }
+
+    .calendar-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .calendar-legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .legend-dot.available {
+      border-color: rgba(34, 197, 94, 0.7);
+      background: rgba(34, 197, 94, 0.18);
+    }
+
+    .legend-dot.selected {
+      border-color: rgba(56, 189, 248, 0.9);
+      background: rgba(56, 189, 248, 0.2);
+    }
+
+    .booking-panel {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.1fr);
+      gap: 0.75rem;
+      font-size: 0.8rem;
+    }
+
+    .booking-card {
+      border-radius: 1rem;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: radial-gradient(
+        circle at top left,
+        rgba(15, 23, 42, 0.95),
+        rgba(15, 23, 42, 0.8)
+      );
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .booking-card h3 {
+      font-size: 0.8rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .booking-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .booking-field label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .booking-field input,
+    .booking-field select,
+    .booking-field textarea {
+      border-radius: 0.6rem;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: rgba(15, 23, 42, 0.9);
+      color: #e5e7eb;
+      padding: 0.4rem 0.5rem;
+      font-size: 0.8rem;
+      font-family: inherit;
+      resize: vertical;
+      min-height: 32px;
+    }
+
+    .booking-field input::placeholder,
+    .booking-field textarea::placeholder {
+      color: rgba(148, 163, 184, 0.7);
+    }
+
+    .booking-meta {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .booking-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .booking-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.25rem;
+    }
+
+    .secondary-btn {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: rgba(15, 23, 42, 0.9);
+      color: #e5e7eb;
+      padding: 0.4rem 0.9rem;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      cursor: pointer;
+    }
+
+    .secondary-btn span.icon {
+      font-size: 0.9rem;
+    }
+
+    .primary-btn {
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(135deg, #22c1c3, #a855f7);
+      color: #0b1120;
+      padding: 0.45rem 1.1rem;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      cursor: pointer;
+      box-shadow:
+        0 12px 30px rgba(15, 23, 42, 0.9),
+        0 0 0 1px rgba(15, 23, 42, 0.9);
+    }
+
+    .primary-btn span.icon {
+      font-size: 0.95rem;
+    }
+
+    .slots-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      max-height: 180px;
+      overflow-y: auto;
+      padding-right: 0.25rem;
+    }
+
+    .slot-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      padding: 0.35rem 0.45rem;
+      border-radius: 0.6rem;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .slot-row span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .slot-row .slot-time {
+      color: #e5e7eb;
+      font-weight: 500;
+    }
+
+    .slot-row .slot-capacity {
+      color: var(--text-muted);
+    }
+
+    .slot-row .slot-status {
+      font-size: 0.7rem;
+      padding: 0.15rem 0.45rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      color: var(--text-muted);
+    }
+
+    .slot-row .slot-status.open {
+      border-color: rgba(34, 197, 94, 0.7);
+      color: #bbf7d0;
+    }
+
+    .slot-row .slot-status.full {
+      border-color: rgba(248, 113, 113, 0.7);
+      color: #fecaca;
+    }
+
+    .slot-row button {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: rgba(15, 23, 42, 0.9);
+      color: #e5e7eb;
+      padding: 0.2rem 0.55rem;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      cursor: pointer;
+    }
+
+    .reviews-panel {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.1fr);
+      gap: 0.75rem;
+      font-size: 0.8rem;
+    }
+
+    .reviews-list {
+      border-radius: 1rem;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: radial-gradient(
+        circle at top left,
+        rgba(15, 23, 42, 0.95),
+        rgba(15, 23, 42, 0.8)
+      );
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+
+    .review-item {
+      border-radius: 0.75rem;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      padding: 0.6rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .review-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .review-name {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #e5e7eb;
+    }
+
+    .review-rating {
+      font-size: 0.75rem;
+      color: #facc15;
+    }
+
+    .review-text {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .review-meta {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .review-meta button {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: rgba(15, 23, 42, 0.9);
+      color: #e5e7eb;
+      padding: 0.2rem 0.55rem;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      cursor: pointer;
+    }
+
+    .review-form {
+      border-radius: 1rem;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: radial-gradient(
+        circle at top left,
+        rgba(15, 23, 42, 0.95),
+        rgba(15, 23, 42, 0.8)
+      );
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .review-form h3 {
+      font-size: 0.8rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .review-form .field-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+      gap: 0.5rem;
+    }
+
+    .review-form label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: block;
+      margin-bottom: 0.2rem;
+    }
+
+    .review-form input,
+    .review-form select,
+    .review-form textarea {
+      border-radius: 0.6rem;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: rgba(15, 23, 42, 0.9);
+      color: #e5e7eb;
+      padding: 0.4rem 0.5rem;
+      font-size: 0.8rem;
+      font-family: inherit;
+      resize: vertical;
+      min-height: 32px;
+    }
+
+    .review-form textarea {
+      min-height: 70px;
+    }
+
+    .review-form input::placeholder,
+    .review-form textarea::placeholder {
+      color: rgba(148, 163, 184, 0.7);
+    }
+
+    .review-form-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .review-form-footer button {
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(135deg, #22c1c3, #a855f7);
+      color: #0b1120;
+      padding: 0.4rem 1rem;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      cursor: pointer;
+      box-shadow:
+        0 12px 30px rgba(15, 23, 42, 0.9),
+        0 0 0 1px rgba(15, 23, 42, 0.9);
+    }
+
+    footer {
+      margin-top: 0.5rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid rgba(148, 163, 184, 0.35);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      position: relative;
+      z-index: 2;
+    }
+
+    footer span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    footer span strong {
+      color: #e5e7eb;
+      font-weight: 500;
+    }
+
+    footer a {
+      color: var(--text-muted);
+      text-decoration: none;
+      border-bottom: 1px dashed rgba(148, 163, 184, 0.6);
+    }
+
+    footer a:hover {
+      color: #e5e7eb;
+      border-bottom-style: solid;
+    }
+
+    @media (max-width: 960px) {
+      main {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .layout-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .booking-panel,
+      .reviews-panel {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .hero-card-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .pricing-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 720px) {
+      body {
+        padding: 1rem;
+      }
+
+      .app-shell {
+        padding: 1.25rem;
+        border-radius: 1.25rem;
+      }
+
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .header-cta {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .pricing-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      footer {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero-title {
+        font-size: 1.9rem;
+      }
+
+      .hero-meta {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .calendar-grid {
+        gap: 0.2rem;
+      }
+
+      .calendar-cell {
+        min-height: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header>
+      <div class="brand">
+        <div class="brand-mark">
+          <span>DD</span>
+        </div>
+        <div class="brand-text">
+          <h1>Denton Detailing</h1>
+          <p>Tipp City • Neighborhood Auto Detailing</p>
+        </div>
+      </div>
+      <div class="header-cta">
+        <div class="pill">
+          <span class="pill-dot"></span>
+          <span>Now booking Spring &amp; Summer 2026</span>
+        </div>
+        <button class="primary-cta" id="headerBookBtn">
+          <span class="icon">✦</span>
+          <span>Book a detail</span>
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-kicker">Neighborhood-level care, pro-level results</div>
+        <h2 class="hero-title">
+          Flawless finishes, inside and out—<span>Denton Detailing</span> in Tipp City, OH.
+        </h2>
+        <p class="hero-subtitle">
+          A small, appointment-only detailing studio focused on the cars you actually drive—daily drivers,
+          family haulers, and weekend favorites. No upsell games, just honest work and a car that feels new again.
+        </p>
+        <div class="hero-meta">
+          <span><strong>Mobile-friendly:</strong> Book, confirm, and get reminders by text.</span>
+          <span><strong>Transparent pricing:</strong> No surprise add-ons at the driveway.</span>
+          <span><strong>Local only:</strong> Serving Tipp City and nearby neighborhoods.</span>
+        </div>
+        <div class="hero-footnote">
+          <span class="hero-footnote-dot"></span>
+          <span>Limited slots each week so every car gets proper time and attention.</span>
+        </div>
+      </section>
+
+      <section class="hero-card">
+        <div class="hero-card-inner">
+          <div class="hero-card-header">
+            <div>
+              <div class="hero-card-title">Today’s availability snapshot</div>
+              <div class="hero-card-subtitle" id="heroDateLabel">
+                Loading current week…
+              </div>
+            </div>
+            <div class="hero-card-badge">
+              <span class="hero-card-badge-dot"></span>
+              <span>Live schedule</span>
+            </div>
+          </div>
+
+          <div class="hero-card-grid">
+            <div class="hero-card-section">
+              <h3>Next open day</h3>
+              <strong id="nextOpenDay">Checking…</strong>
+              <p id="nextOpenSummary">
+                We’ll show your next available appointment day and how many cars we can take.
+              </p>
+              <div class="hero-card-section-footer">
+                <span>
+                  <span class="icon">☀️</span>
+                  <span id="nextOpenWeather">Weather-friendly days preferred for exterior work.</span>
+                </span>
+                <span class="badge-soft">
+                  <span>Slots left:</span>
+                  <strong id="nextOpenSlots">—</strong>
+                </span>
+              </div>
+            </div>
+
+            <div class="hero-card-section">
+              <h3>Today’s status</h3>
+              <strong id="todayStatusLabel">Loading…</strong>
+              <p id="todayStatusSummary">
+                We’ll show whether today is fully booked, partially open, or closed for detailing.
+              </p>
+              <div class="hero-card-section-footer">
+                <span>
+                  <span class="icon">🕒</span>
+                  <span id="todayStatusMeta">Live updates as bookings come in.</span>
+                </span>
+                <span class="badge-soft">
+                  <span>Booked today:</span>
+                  <strong id="todayBookedCount">—</strong>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-card-divider"></div>
+
+          <div class="hero-card-footer">
+            <span>
+              <span class="icon">✦</span>
+              <span>Tap any open day below to reserve a time.</span>
+            </span>
+            <span class="cta-link" id="heroScrollToBooking">
+              <span>Jump to booking</span>
+              <span class="icon">↘</span>
+            </span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <section class="layout-grid">
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">Detailing menu</div>
+            <div class="panel-subtitle">
+              Three simple packages, built around how you actually use your car.
+            </div>
+          </div>
+          <div class="panel-tag">
+            <span class="panel-tag-dot"></span>
+            <span>Most cars finished same day</span>
+          </div>
+        </div>
+
+        <div class="pricing-grid">
+          <article class="pricing-card">
+            <div class="pricing-card-header">
+              <div>
+                <div class="pricing-name">Interior Refresh</div>
+                <div class="pricing-meta">For daily drivers that need a reset.</div>
+              </div>
+              <div class="pricing-pill">Light use</div>
+            </div>
+            <div class="pricing-price">
+              $80–$110 <span>• coupes, sedans, small SUVs</span>
+            </div>
+            <div class="pricing-list">
+              <span>Thorough vacuum of carpets, seats, and mats</span>
+              <span>Wipe-down of dash, console, and door panels</span>
+              <span>Interior glass cleaned, light spot treatment</span>
+            </div>
+            <div class="pricing-footer">
+              <span>
+                <span>Typical time:</span>
+                <strong>1.5–2 hours</strong>
+              </span>
+              <span class="cta-link" data-package="Interior Refresh">
+                <span>Book this</span>
+                <span class="icon">→</span>
+              </span>
+            </div>
+          </article>
+
+          <article class="pricing-card">
+            <div class="pricing-card-header">
+              <div>
+                <div class="pricing-name">Full Detail (Interior + Exterior)</div>
+                <div class="pricing-meta">Best value for cars that need everything.</div>
+              </div>
+              <div class="pricing-pill popular">Most popular</div>
+            </div>
+            <div class="pricing-price">
+              $160–$220 <span>• most vehicles</span>
+            </div>
+            <div class="pricing-list">
+              <span>Everything in Interior &amp; Exterior packages</span>
+              <span>Deeper interior attention where needed</span>
+              <span>Perfect for “it hasn’t been done in a while” cars</span>
+            </div>
+            <div class="pricing-footer">
+              <span>
+                <span>Typical time:</span>
+                <strong>3–4.5 hours</strong>
+              </span>
+              <span class="cta-link" data-package="Full Detail">
+                <span>Book this</span>
+                <span class="icon">→</span>
+              </span>
+            </div>
+          </article>
+
+          <article class="pricing-card">
+            <div class="pricing-card-header">
+              <div>
+                <div class="pricing-name">Exterior Detail</div>
+                <div class="pricing-meta">For when the outside needs to shine.</div>
+              </div>
+              <div class="pricing-pill">Weather dependent</div>
+            </div>
+            <div class="pricing-price">
+              $90–$130 <span>• depending on size</span>
+            </div>
+            <div class="pricing-list">
+              <span>Hand wash, wheels, and tires cleaned</span>
+              <span>Paint-safe drying and basic protection</span>
+              <span>Exterior glass cleaned, trim wiped down</span>
+            </div>
+            <div class="pricing-footer">
+              <span>
+                <span>Typical time:</span>
+                <strong>1.5–2.5 hours</strong>
+              </span>
+              <span class="cta-link" data-package="Exterior Detail">
+                <span>Book this</span>
+                <span class="icon">→</span>
+              </span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">Live calendar</div>
+            <div class="panel-subtitle">
+              Tap a day to see how many cars we can take.
+            </div>
+          </div>
+          <div class="panel-tag">
+            <span class="panel-tag-dot"></span>
+            <span>Updated as bookings come in</span>
+          </div>
+        </div>
+
+        <div class="calendar">
+          <div class="calendar-header">
+            <div class="calendar-month" id="calendarMonthLabel">Loading…</div>
+            <div class="calendar-controls">
+              <button class="calendar-btn" id="prevMonthBtn">‹</button>
+              <button class="calendar-btn" id="nextMonthBtn">›</button>
+            </div>
+          </div>
+          <div class="calendar-grid" id="calendarGrid">
+            <!-- Days injected by JS -->
+          </div>
+          <div class="calendar-legend">
+            <span>
+              <span class="legend-dot available"></span>
+              <span>Open day</span>
+            </span>
+            <span>
+              <span class="legend-dot selected"></span>
+              <span>Selected day</span>
+            </span>
+            <span>
+              <span class="legend-dot"></span>
+              <span>No availability set</span>
+            </span>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <section class="layout-grid">
+      <section class="panel" id="bookingPanel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">Book a detail</div>
+            <div class="panel-subtitle" id="bookingDateLabel">
+              Choose a day on the calendar to get started.
+            </div>
+          </div>
+          <div class="panel-tag">
+            <span class="panel-tag-dot"></span>
+            <span>Text confirmation for every booking</span>
+          </div>
+        </div>
+
+        <div class="booking-panel">
+          <div class="booking-card">
+            <h3>Your info</h3>
+            <div class="booking-field">
+              <label for="bookingName">Name</label>
+              <input id="bookingName" type="text" placeholder="Who’s the car under?" />
+            </div>
+            <div class="booking-field">
+              <label for="bookingPhone">Mobile number</label>
+              <input id="bookingPhone" type="tel" placeholder="For confirmations and day-of updates" />
+            </div>
+            <div class="booking-field">
+              <label for="bookingVehicle">Vehicle</label>
+              <input id="bookingVehicle" type="text" placeholder="Year, make, model (and color if you want)" />
+            </div>
+            <div class="booking-field">
+              <label for="bookingPackage">Package</label>
+              <select id="bookingPackage">
+                <option value="">Select a package</option>
+                <option value="Interior Refresh">Interior Refresh</option>
+                <option value="Full Detail">Full Detail (Interior + Exterior)</option>
+                <option value="Exterior Detail">Exterior Detail</option>
+              </select>
+            </div>
+            <div class="booking-field">
+              <label for="bookingNotes">Anything I should know?</label>
+              <textarea id="bookingNotes" placeholder="Kid seats, pet hair, problem spots, time constraints, etc."></textarea>
+            </div>
+            <div class="booking-meta">
+              <span>
+                <span>Selected day:</span>
+                <strong id="bookingSelectedDate">None yet</strong>
+              </span>
+              <span>
+                <span>Slots left that day:</span>
+                <strong id="bookingSelectedSlots">—</strong>
+              </span>
+            </div>
+            <div class="booking-actions">
+              <button class="secondary-btn" id="clearBookingBtn">
+                <span class="icon">↺</span>
+                <span>Clear form</span>
+              </button>
+              <button class="primary-btn" id="submitBookingBtn">
+                <span class="icon">✉</span>
+                <span>Text in this booking</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="booking-card">
+            <h3>Day’s schedule</h3>
+            <div class="booking-field">
+              <label for="slotTime">Add or adjust slots</label>
+              <input id="slotTime" type="text" placeholder="Example: 9:00 AM – 11:00 AM" />
+            </div>
+            <div class="booking-field">
+              <label for="slotCapacity">Cars in this window</label>
+              <input id="slotCapacity" type="number" min="1" max="4" value="1" />
+            </div>
+            <div class="booking-actions">
+              <button class="secondary-btn" id="addSlotBtn">
+                <span class="icon">＋</span>
+                <span>Add slot</span>
+              </button>
+              <button class="secondary-btn" id="clearSlotsBtn">
+                <span class="icon">🧹</span>
+                <span>Clear day</span>
+              </button>
+            </div>
+            <div class="slots-list" id="slotsList">
+              <div class="slot-row">
+                <span>
+                  <span class="slot-time">No day selected</span>
+                </span>
+                <span class="slot-status">Set a day on the calendar</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">Reviews &amp; notes</div>
+            <div class="panel-subtitle">
+              Real feedback from neighbors who’ve already trusted their cars here.
+            </div>
+          </div>
+          <div class="panel-tag">
+            <span class="panel-tag-dot"></span>
+            <span>Kept honest and simple</span>
+          </div>
+        </div>
+
+        <div class="reviews-panel">
+          <div class="reviews-list" id="reviewsList">
+            <div class="review-item">
+              <div class="review-header">
+                <span class="review-name">Loading reviews…</span>
+                <span class="review-rating">★★★★★</span>
+              </div>
+              <div class="review-text">
+                Reviews will appear here as they’re added.
+              </div>
+              <div class="review-meta">
+                <span>First-time customers, returning regulars, and everything in between.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="review-form">
+            <h3>Leave a quick review</h3>
+            <div class="field-row">
+              <div>
+                <label for="reviewName">Name</label>
+                <input id="reviewName" type="text" placeholder="First name is perfect" />
+              </div>
+              <div>
+                <label for="reviewRating">Rating</label>
+                <select id="reviewRating">
+                  <option value="5">★★★★★</option>
+                  <option value="4">★★★★☆</option>
+                  <option value="3">★★★☆☆</option>
+                  <option value="2">★★☆☆☆</option>
+                  <option value="1">★☆☆☆☆</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label for="reviewText">How did it go?</label>
+              <textarea id="reviewText" placeholder="Short and honest is perfect."></textarea>
+            </div>
+            <div class="review-form-footer">
+              <span>Once submitted, your review shows up for everyone.</span>
+              <button id="submitReviewBtn">
+                <span class="icon">✎</span>
+                <span>Post review</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <footer>
+      <span>
+        <span>© 2026 Denton Detailing</span>
+        <span>•</span>
+        <span>Built as a neighborhood side hustle, not a big shop.</span>
+      </span>
+      <span>
+        <span>Questions before you book?</span>
+        <a href="sms:+19377130586">Text Micah directly</a>
+      </span>
+    </footer>
+  </div>
+
+  <!-- Firebase compat SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDiiuOJ_9U5Mql9F5Muwlmfjl8CDT-q4cg",
+      authDomain: "denton-detailing.firebaseapp.com",
+      projectId: "denton-detailing",
+      storageBucket: "denton-detailing.firebasestorage.app",
+      messagingSenderId: "69212271449",
+      appId: "1:69212271449:web:5dfecaf2cfe73ea1ef9248"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const availabilityCol = db.collection("availability");
+    const bookingsCol = db.collection("bookings");
+    const reviewsCol = db.collection("reviews");
+
+    const calendarGrid = document.getElementById("calendarGrid");
+    const calendarMonthLabel = document.getElementById("calendarMonthLabel");
+    const prevMonthBtn = document.getElementById("prevMonthBtn");
+    const nextMonthBtn = document.getElementById("nextMonthBtn");
+
+    const heroDateLabel = document.getElementById("heroDateLabel");
+    const nextOpenDayEl = document.getElementById("nextOpenDay");
+    const nextOpenSummaryEl = document.getElementById("nextOpenSummary");
+    const nextOpenSlotsEl = document.getElementById("nextOpenSlots");
+    const todayStatusLabelEl = document.getElementById("todayStatusLabel");
+    const todayStatusSummaryEl = document.getElementById("todayStatusSummary");
+    const todayStatusMetaEl = document.getElementById("todayStatusMeta");
+    const todayBookedCountEl = document.getElementById("todayBookedCount");
+
+    const bookingDateLabel = document.getElementById("bookingDateLabel");
+    const bookingSelectedDateEl = document.getElementById("bookingSelectedDate");
+    const bookingSelectedSlotsEl = document.getElementById("bookingSelectedSlots");
+
+    const bookingNameInput = document.getElementById("bookingName");
+    const bookingPhoneInput = document.getElementById("bookingPhone");
+    const bookingVehicleInput = document.getElementById("bookingVehicle");
+    const bookingPackageSelect = document.getElementById("bookingPackage");
+    const bookingNotesInput = document.getElementById("bookingNotes");
+
+    const slotTimeInput = document.getElementById("slotTime");
+    const slotCapacityInput = document.getElementById("slotCapacity");
+    const slotsListEl = document.getElementById("slotsList");
+
+    const clearBookingBtn = document.getElementById("clearBookingBtn");
+    const submitBookingBtn = document.getElementById("submitBookingBtn");
+    const addSlotBtn = document.getElementById("addSlotBtn");
+    const clearSlotsBtn = document.getElementById("clearSlotsBtn");
+
+    const reviewsListEl = document.getElementById("reviewsList");
+    const reviewNameInput = document.getElementById("reviewName");
+    const reviewRatingSelect = document.getElementById("reviewRating");
+    const reviewTextInput = document.getElementById("reviewText");
+    const submitReviewBtn = document.getElementById("submitReviewBtn");
+
+    const headerBookBtn = document.getElementById("headerBookBtn");
+    const heroScrollToBooking = document.getElementById("heroScrollToBooking");
+
+    let currentMonth = new Date().getMonth();
+    let currentYear = new Date().getFullYear();
+    let selectedDateKey = null;
+    let monthAvailabilityCache = {};
+    let monthBookingsCache = {};
+
+    function formatDateKey(date) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, "0");
+      const d = String(date.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+
+    function formatDisplayDate(date) {
+      return date.toLocaleDateString(undefined, {
+        weekday: "short",
+        month: "short",
+        day: "numeric"
+      });
+    }
+
+    function scrollToBooking() {
+      const panel = document.getElementById("bookingPanel");
+      if (panel) {
+        panel.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+
+    headerBookBtn.addEventListener("click", scrollToBooking);
+    heroScrollToBooking.addEventListener("click", scrollToBooking);
+
+    async function loadMonthData(year, month) {
+      const start = new Date(year, month, 1);
+      const end = new Date(year, month + 1, 0);
+      const startKey = formatDateKey(start);
+      const endKey = formatDateKey(end);
+
+      const availSnap = await availabilityCol
+        .where(firebase.firestore.FieldPath.documentId(), ">=", startKey)
+        .where(firebase.firestore.FieldPath.documentId(), "<=", endKey)
+        .get();
+
+      const bookingsSnap = await bookingsCol
+        .where("dateKey", ">=", startKey)
+        .where("dateKey", "<=", endKey)
+        .get();
+
+      const availability = {};
+      availSnap.forEach(doc => {
+        availability[doc.id] = doc.data();
+      });
+
+      const bookings = {};
+      bookingsSnap.forEach(doc => {
+        const data = doc.data();
+        const key = data.dateKey;
+        if (!bookings[key]) bookings[key] = [];
+        bookings[key].push({ id: doc.id, ...data });
+      });
+
+      monthAvailabilityCache = availability;
+      monthBookingsCache = bookings;
+    }
+
+    function renderCalendar(year, month) {
+      calendarGrid.innerHTML = "";
+
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+      const monthName = firstDay.toLocaleDateString(undefined, {
+        month: "long",
+        year: "numeric"
+      });
+      calendarMonthLabel.textContent = monthName;
+
+      heroDateLabel.textContent = `Showing ${monthName}`;
+
+      const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      dayLabels.forEach(label => {
+        const el = document.createElement("div");
+        el.className = "calendar-day-label";
+        el.textContent = label;
+        calendarGrid.appendChild(el);
+      });
+
+      const startWeekday = firstDay.getDay();
+      for (let i = 0; i < startWeekday; i++) {
+        const cell = document.createElement("div");
+        cell.className = "calendar-cell disabled";
+        calendarGrid.appendChild(cell);
+      }
+
+      const todayKey = formatDateKey(new Date());
+
+      for (let day = 1; day <= lastDay.getDate(); day++) {
+        const date = new Date(year, month, day);
+        const key = formatDateKey(date);
+        const cell = document.createElement("div");
+        cell.className = "calendar-cell";
+        cell.dataset.dateKey = key;
+
+        const dateEl = document.createElement("div");
+        dateEl.className = "date";
+        dateEl.textContent = day;
+
+        const slotsEl = document.createElement("div");
+        slotsEl.className = "slots";
+
+        const avail = monthAvailabilityCache[key];
+        const bookings = monthBookingsCache[key] || [];
+
+        if (avail && avail.slots && avail.slots.length > 0) {
+          const totalCapacity = avail.slots.reduce(
+            (sum, s) => sum + (s.capacity || 1),
+            0
+          );
+          const bookedCount = bookings.length;
+          const remaining = Math.max(totalCapacity - bookedCount, 0);
+
+          if (remaining > 0) {
+            cell.classList.add("available");
+            slotsEl.textContent = `${remaining} open`;
+          } else {
+            slotsEl.textContent = "Full";
+          }
+        } else {
+          slotsEl.textContent = "No slots";
+        }
+
+        if (key === selectedDateKey) {
+          cell.classList.add("selected");
+        }
+
+        cell.appendChild(dateEl);
+        cell.appendChild(slotsEl);
+
+        if (key < todayKey) {
+          cell.classList.add("disabled");
+        } else {
+          cell.addEventListener("click", () => handleDateSelect(key));
+        }
+
+        calendarGrid.appendChild(cell);
+      }
+    }
+
+    async function handleDateSelect(dateKey) {
+      selectedDateKey = dateKey;
+      const date = new Date(
+        Number(dateKey.slice(0, 4)),
+        Number(dateKey.slice(5, 7)) - 1,
+        Number(dateKey.slice(8, 10))
+      );
+
+      bookingDateLabel.textContent = `Booking for ${formatDisplayDate(date)}`;
+      bookingSelectedDateEl.textContent = formatDisplayDate(date);
+
+      const availDoc = await availabilityCol.doc(dateKey).get();
+      let slots = [];
+      if (availDoc.exists) {
+        const data = availDoc.data();
+        slots = data.slots || [];
+      }
+
+      const bookingsSnap = await bookingsCol.where("dateKey", "==", dateKey).get();
+      const bookings = bookingsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+      renderSlots(slots, bookings);
+
+      const totalCapacity = slots.reduce(
+        (sum, s) => sum + (s.capacity || 1),
+        0
+      );
+      const remaining = Math.max(totalCapacity - bookings.length, 0);
+      bookingSelectedSlotsEl.textContent =
+        totalCapacity === 0 ? "No slots set" : `${remaining} of ${totalCapacity}`;
+
+      await refreshHeroSnapshot();
+      await refreshMonthCaches();
+    }
+
+    function renderSlots(slots, bookings) {
+      slotsListEl.innerHTML = "";
+
+      if (!selectedDateKey) {
+        const row = document.createElement("div");
+        row.className = "slot-row";
+        row.innerHTML = `
+          <span><span class="slot-time">No day selected</span></span>
+          <span class="slot-status">Set a day on the calendar</span>
+        `;
+        slotsListEl.appendChild(row);
+        return;
+      }
+
+      if (!slots || slots.length === 0) {
+        const row = document.createElement("div");
+        row.className = "slot-row";
+        row.innerHTML = `
+          <span><span class="slot-time">No slots set</span></span>
+          <span class="slot-status">Add at least one time window</span>
+        `;
+        slotsListEl.appendChild(row);
+        return;
+      }
+
+      slots.forEach((slot, index) => {
+        const row = document.createElement("div");
+        row.className = "slot-row";
+
+        const slotBookings = bookings.filter(b => b.slotIndex === index);
+        const remaining = Math.max((slot.capacity || 1) - slotBookings.length, 0);
+
+        const statusClass = remaining > 0 ? "open" : "full";
+        const statusLabel = remaining > 0 ? `${remaining} open` : "Full";
+
+        row.innerHTML = `
+          <span>
+            <span class="slot-time">${slot.time}</span>
+            <span class="slot-capacity">(${slot.capacity || 1} car${(slot.capacity || 1) > 1 ? "s" : ""})</span>
+          </span>
+          <span class="slot-status ${statusClass}">${statusLabel}</span>
+          <button data-index="${index}">Remove</button>
+        `;
+
+        const removeBtn = row.querySelector("button");
+        removeBtn.addEventListener("click", async () => {
+          const newSlots = slots.filter((_, i) => i !== index);
+          await availabilityCol.doc(selectedDateKey).set(
+            { slots: newSlots },
+            { merge: true }
+          );
+          const bookingsSnap = await bookingsCol
+            .where("dateKey", "==", selectedDateKey)
+            .get();
+          const bookings = bookingsSnap.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }));
+          renderSlots(newSlots, bookings);
+          await refreshHeroSnapshot();
+          await refreshMonthCaches();
+        });
+
+        slotsListEl.appendChild(row);
+      });
+    }
+
+    async function refreshMonthCaches() {
+      await loadMonthData(currentYear, currentMonth);
+      renderCalendar(currentYear, currentMonth);
+    }
+
+    async function refreshHeroSnapshot() {
+      const today = new Date();
+      const todayKey = formatDateKey(today);
+
+      const todayAvailDoc = await availabilityCol.doc(todayKey).get();
+      const todayAvail = todayAvailDoc.exists ? todayAvailDoc.data() : null;
+
+      const todayBookingsSnap = await bookingsCol
+        .where("dateKey", "==", todayKey)
+        .get();
+      const todayBookings = todayBookingsSnap.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      if (todayAvail && todayAvail.slots && todayAvail.slots.length > 0) {
+        const totalCapacity = todayAvail.slots.reduce(
+          (sum, s) => sum + (s.capacity || 1),
+          0
+        );
+        const bookedCount = todayBookings.length;
+        const remaining = Math.max(totalCapacity - bookedCount, 0);
+
+        if (remaining > 0) {
+          todayStatusLabelEl.textContent = "Partially open today";
+          todayStatusSummaryEl.textContent =
+            "We still have room for at least one more car today.";
+        } else {
+          todayStatusLabelEl.textContent = "Fully booked today";
+          todayStatusSummaryEl.textContent =
+            "Today’s schedule is full. Tap another day to grab a spot.";
+        }
+
+        todayStatusMetaEl.textContent = "Live view based on real bookings.";
+        todayBookedCountEl.textContent = `${bookedCount} of ${totalCapacity}`;
+      } else {
+        todayStatusLabelEl.textContent = "No slots set for today";
+        todayStatusSummaryEl.textContent =
+          "If you’re flexible, pick another day on the calendar.";
+        todayStatusMetaEl.textContent = "Some days are kept open for catch-up or weather.";
+        todayBookedCountEl.textContent = "0";
+      }
+
+      const nextOpen = await findNextOpenDay(today);
+      if (nextOpen) {
+        const { date, remaining, total } = nextOpen;
+        nextOpenDayEl.textContent = formatDisplayDate(date);
+        nextOpenSummaryEl.textContent =
+          remaining > 1
+            ? `We can comfortably fit ${remaining} more cars this day.`
+            : `We’ve got room for one more car this day.`;
+        nextOpenSlotsEl.textContent = `${remaining} of ${total}`;
+      } else {
+        nextOpenDayEl.textContent = "No open days set yet";
+        nextOpenSummaryEl.textContent =
+          "Once availability is added, your next open day will show up here.";
+        nextOpenSlotsEl.textContent = "—";
+      }
+    }
+
+    async function findNextOpenDay(startDate) {
+      const maxLookAheadDays = 30;
+      for (let i = 0; i <= maxLookAheadDays; i++) {
+        const date = new Date(
+          startDate.getFullYear(),
+          startDate.getMonth(),
+          startDate.getDate() + i
+        );
+        const key = formatDateKey(date);
+
+        const availDoc = await availabilityCol.doc(key).get();
+        if (!availDoc.exists) continue;
+        const avail = availDoc.data();
+        if (!avail.slots || avail.slots.length === 0) continue;
+
+        const bookingsSnap = await bookingsCol.where("dateKey", "==", key).get();
+        const bookings = bookingsSnap.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+
+        const totalCapacity = avail.slots.reduce(
+          (sum, s) => sum + (s.capacity || 1),
+          0
+        );
+        const remaining = Math.max(totalCapacity - bookings.length, 0);
+
+        if (remaining > 0) {
+          return { date, remaining, total: totalCapacity };
+        }
+      }
+      return null;
+    }
+
+    prevMonthBtn.addEventListener("click", async () => {
+      currentMonth--;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+      }
+      await refreshMonthCaches();
+    });
+
+    nextMonthBtn.addEventListener("click", async () => {
+      currentMonth++;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      }
+      await refreshMonthCaches();
+    });
+
+    clearBookingBtn.addEventListener("click", () => {
+      bookingNameInput.value = "";
+      bookingPhoneInput.value = "";
+      bookingVehicleInput.value = "";
+      bookingPackageSelect.value = "";
+      bookingNotesInput.value = "";
+    });
+
+    submitBookingBtn.addEventListener("click", async () => {
+      if (!selectedDateKey) {
+        alert("Pick a day on the calendar first.");
+        return;
+      }
+
+      const name = bookingNameInput.value.trim();
+      const phone = bookingPhoneInput.value.trim();
+      const vehicle = bookingVehicleInput.value.trim();
+      const pkg = bookingPackageSelect.value;
+      const notes = bookingNotesInput.value.trim();
+
+      if (!name || !phone || !vehicle || !pkg) {
+        alert("Name, phone, vehicle, and package are required.");
+        return;
+      }
+
+      const availDoc = await availabilityCol.doc(selectedDateKey).get();
+      if (!availDoc.exists) {
+        alert("No slots set for that day yet.");
+        return;
+      }
+      const avail = availDoc.data();
+      const slots = avail.slots || [];
+      if (slots.length === 0) {
+        alert("No slots set for that day yet.");
+        return;
+      }
+
+      const bookingsSnap = await bookingsCol
+        .where("dateKey", "==", selectedDateKey)
+        .get();
+      const bookings = bookingsSnap.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      let chosenSlotIndex = null;
+      for (let i = 0; i < slots.length; i++) {
+        const slot = slots[i];
+        const slotBookings = bookings.filter(b => b.slotIndex === i);
+        const remaining = Math.max((slot.capacity || 1) - slotBookings.length, 0);
+        if (remaining > 0) {
+          chosenSlotIndex = i;
+          break;
+        }
+      }
+
+      if (chosenSlotIndex === null) {
+        alert("That day is fully booked. Try another day.");
+        await refreshHeroSnapshot();
+        await refreshMonthCaches();
+        return;
+      }
+
+      const slot = slots[chosenSlotIndex];
+      const date = new Date(
+        Number(selectedDateKey.slice(0, 4)),
+        Number(selectedDateKey.slice(5, 7)) - 1,
+        Number(selectedDateKey.slice(8, 10))
+      );
+
+      const booking = {
+        name,
+        phone,
+        vehicle,
+        package: pkg,
+        notes,
+        dateKey: selectedDateKey,
+        slotIndex: chosenSlotIndex,
+        slotTime: slot.time,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      await bookingsCol.add(booking);
+
+      const smsBody = encodeURIComponent(
+        `Hi, this is ${name}. I’d like to book a ${pkg} for my ${vehicle} on ${formatDisplayDate(
+          date
+        )} around ${slot.time}. Notes: ${notes || "None."}`
+      );
+      const smsLink = `sms:+19377130586?&body=${smsBody}`;
+      window.location.href = smsLink;
+
+      await handleDateSelect(selectedDateKey);
+    });
+
+    addSlotBtn.addEventListener("click", async () => {
+      if (!selectedDateKey) {
+        alert("Pick a day on the calendar first.");
+        return;
+      }
+
+      const time = slotTimeInput.value.trim();
+      const capacity = Number(slotCapacityInput.value) || 1;
+
+      if (!time) {
+        alert("Add a time window first.");
+        return;
+      }
+
+      const docRef = availabilityCol.doc(selectedDateKey);
+      const doc = await docRef.get();
+      let slots = [];
+      if (doc.exists) {
+        const data = doc.data();
+        slots = data.slots || [];
+      }
+
+      slots.push({ time, capacity });
+      await docRef.set({ slots }, { merge: true });
+
+      slotTimeInput.value = "";
+      slotCapacityInput.value = "1";
+
+      const bookingsSnap = await bookingsCol
+        .where("dateKey", "==", selectedDateKey)
+        .get();
+      const bookings = bookingsSnap.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      renderSlots(slots, bookings);
+      await refreshHeroSnapshot();
+      await refreshMonthCaches();
+    });
+
+    clearSlotsBtn.addEventListener("click", async () => {
+      if (!selectedDateKey) {
+        alert("Pick a day on the calendar first.");
+        return;
+      }
+
+      if (!confirm("Clear all slots for this day? Existing bookings will still be stored.")) {
+        return;
+      }
+
+      await availabilityCol.doc(selectedDateKey).set({ slots: [] }, { merge: true });
+
+      const bookingsSnap = await bookingsCol
+        .where("dateKey", "==", selectedDateKey)
+        .get();
+      const bookings = bookingsSnap.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      renderSlots([], bookings);
+      await refreshHeroSnapshot();
+      await refreshMonthCaches();
+    });
+
+    async function loadReviews() {
+      const snapshot = await reviewsCol
+        .orderBy("createdAt", "desc")
+        .limit(50)
+        .get();
+
+      const reviews = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      renderReviews(reviews);
+    }
+
+    function renderReviews(reviews) {
+      reviewsListEl.innerHTML = "";
+
+      if (!reviews || reviews.length === 0) {
+        const item = document.createElement("div");
+        item.className = "review-item";
+        item.innerHTML = `
+          <div class="review-header">
+            <span class="review-name">No reviews yet</span>
+            <span class="review-rating">★★★★★</span>
+          </div>
+          <div class="review-text">
+            Once people start leaving reviews, they’ll show up here.
+          </div>
+          <div class="review-meta">
+            <span>First few reviews help neighbors know what to expect.</span>
+          </div>
+        `;
+        reviewsListEl.appendChild(item);
+        return;
+      }
+
+      reviews.forEach(review => {
+        const item = document.createElement("div");
+        item.className = "review-item";
+
+        const ratingStars = "★★★★★☆☆☆☆☆".slice(5 - (review.rating || 5), 10 - (review.rating || 5));
+
+        item.innerHTML = `
+          <div class="review-header">
+            <span class="review-name">${review.name || "Neighbor"}</span>
+            <span class="review-rating">${"★".repeat(
+              review.rating || 5
+            )}${"☆".repeat(5 - (review.rating || 5))}</span>
+          </div>
+          <div class="review-text">
+            ${review.text || ""}
+          </div>
+          <div class="review-meta">
+            <span>${review.createdAt?.toDate
+              ? review.createdAt.toDate().toLocaleDateString()
+              : ""}</span>
+            <button data-id="${review.id}">Remove</button>
+          </div>
+        `;
+
+        const removeBtn = item.querySelector("button");
+        removeBtn.addEventListener("click", async () => {
+          if (!confirm("Remove this review?")) return;
+          await reviewsCol.doc(review.id).delete();
+          await loadReviews();
+        });
+
+        reviewsListEl.appendChild(item);
+      });
+    }
+
+    submitReviewBtn.addEventListener("click", async () => {
+      const name = reviewNameInput.value.trim() || "Neighbor";
+      const rating = Number(reviewRatingSelect.value) || 5;
+      const text = reviewTextInput.value.trim();
+
+      if (!text) {
+        alert("A few words about your experience would be great.");
+        return;
+      }
+
+      await reviewsCol.add({
+        name,
+        rating,
+        text,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      reviewNameInput.value = "";
+      reviewRatingSelect.value = "5";
+      reviewTextInput.value = "";
+
+      await loadReviews();
+    });
+
+    document.querySelectorAll(".pricing-footer .cta-link").forEach(link => {
+      link.addEventListener("click", () => {
+        const pkg = link.getAttribute("data-package");
+        if (pkg) {
+          bookingPackageSelect.value = pkg;
+        }
+        scrollToBooking();
+      });
+    });
+
+    (async function init() {
+      const now = new Date();
+      currentMonth = now.getMonth();
+      currentYear = now.getFullYear();
+
+      await refreshMonthCaches();
+      await refreshHeroSnapshot();
+      await loadReviews();
+    })();
+  </script>
+</body>
+</html>
