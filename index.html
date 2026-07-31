@@ -362,11 +362,13 @@
     .form-group label{display:block;font-size:.68rem;font-weight:700;color:var(--text3);margin-bottom:8px;letter-spacing:.16em;text-transform:uppercase}
     .form-row{display:grid;grid-template-columns:1fr;gap:16px}
     @media(min-width:480px){.form-row{grid-template-columns:1fr 1fr}}
-    input[type="text"],input[type="tel"],select{display:block;width:100%;padding:14px 16px;font-family:'DM Sans',sans-serif;font-size:16px;color:var(--text);background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:var(--r-sm);outline:none;appearance:none;-webkit-appearance:none;transition:border-color .2s,background .2s}
-    input::placeholder{color:var(--text3)}
-    input:focus,select:focus{border-color:rgba(0,200,92,.5);background:rgba(255,255,255,.07)}
+    input[type="text"],input[type="tel"],select,textarea{display:block;width:100%;padding:14px 16px;font-family:'DM Sans',sans-serif;font-size:16px;color:var(--text);background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:var(--r-sm);outline:none;appearance:none;-webkit-appearance:none;transition:border-color .2s,background .2s}
+    textarea{resize:vertical;min-height:100px;line-height:1.5}
+    input::placeholder,textarea::placeholder{color:var(--text3)}
+    input:focus,select:focus,textarea:focus{border-color:rgba(0,200,92,.5);background:rgba(255,255,255,.07)}
     select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2300c85c' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;padding-right:40px}
     select option{background:#1a1a1a;color:var(--text)}
+    .custom-plan-wrap{max-width:640px;margin:0 auto}
     .btn-submit{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:16px;border-radius:var(--r-sm);border:none;background:var(--gold);color:#000;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;transition:background .2s,transform .15s,opacity .15s}
     .btn-submit:hover{background:var(--gold2);transform:translateY(-1px)}
     .btn-submit:active:not(:disabled){transform:scale(.98)}
@@ -958,7 +960,7 @@
       <a href="#page-home" data-page="home" class="active">Home</a>
       <a href="#page-gallery" data-page="gallery">Photos</a>
       <a href="#page-about" data-page="about">Meet Micah</a>
-      <a href="#page-plans" data-page="plans">Plans</a>
+      <a href="#page-plans" data-page="plans">Maintenance Details</a>
       <a href="#page-track" data-page="track">Track My Appointment</a>
       <button type="button" class="nav-account-link" id="nav-account-btn">Already a Customer?</button>
     </nav>
@@ -1258,9 +1260,9 @@
           </div>
         </div>
         <div class="form-group">
-          <label for="booking-plan">Recurring plan (optional)</label>
+          <label for="booking-plan">Maintenance detail (optional)</label>
           <select id="booking-plan">
-            <option value="">One-time — no plan</option>
+            <option value="">One-time — no maintenance detail</option>
           </select>
           <div class="plan-price-preview" id="booking-plan-preview"></div>
         </div>
@@ -1309,7 +1311,7 @@
     <p class="qb-hero-sub">We pulled up your saved info for <strong id="qb-phone-display"></strong>. Everything below is editable — change anything you need, then pick a service and date.</p>
     <p id="qb-punch-status" class="qb-hero-sub" style="margin-bottom:18px"></p>
     <div class="qb-quicklinks">
-      <a href="#page-plans" data-page="plans">Recurring Plans</a>
+      <a href="#page-plans" data-page="plans">Maintenance Details</a>
       <a href="#page-gallery" data-page="gallery">Photos</a>
       <a href="#page-terms" data-page="terms">Terms</a>
     </div>
@@ -1352,9 +1354,9 @@
         </div>
       </div>
       <div class="form-group">
-        <label for="qb-plan-type">Recurring plan (optional)</label>
+        <label for="qb-plan-type">Maintenance detail (optional)</label>
         <select id="qb-plan-type">
-          <option value="">One-time — no plan</option>
+          <option value="">One-time — no maintenance detail</option>
         </select>
         <div class="plan-price-preview" id="qb-plan-preview"></div>
       </div>
@@ -1546,17 +1548,51 @@
 <section class="section">
   <div class="reveal">
     <div class="section-label">Save on every visit</div>
-    <h2 class="section-title">Recurring Detail Plans</h2>
+    <h2 class="section-title">Maintenance Details</h2>
     <p class="section-body">Set a cadence that fits your car and get a discount on every appointment — applies to any service. No subscription charge; you simply pay after each detail, same as always.</p>
   </div>
 
-  <div class="plans-group-label">Ongoing Plans</div>
+  <div class="plans-group-label">Ongoing Maintenance Details</div>
   <div class="plans-grid stagger-children" id="plans-grid-ongoing"></div>
 
-  <div class="plans-group-label">Half-Year Plans <span>Pick a 6-month cadence</span></div>
+  <div class="plans-group-label">Half-Year Maintenance Detail</div>
   <div class="plans-grid stagger-children" id="plans-grid-halfyear"></div>
 
-  <p class="plans-footnote">Choose your plan on the booking form — the discount is applied automatically to whichever service you pick, and it's the same easy text-to-confirm process every time.</p>
+  <p class="plans-footnote">Choose your maintenance detail on the booking form — the discount is applied automatically to whichever service you pick, and it's the same easy text-to-confirm process every time.</p>
+
+  <div class="plans-group-label" style="margin-top:56px">Create Your Own <span>Tell us exactly what you want</span></div>
+  <div class="reveal custom-plan-wrap">
+    <div class="booking-card">
+      <h3>Not seeing the right fit?</h3>
+      <p class="sub">Describe the cadence, services, or anything else you have in mind and I'll text you back with a custom maintenance detail built around it.</p>
+      <form id="custom-plan-form" novalidate>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cp-name">Full name *</label>
+            <input type="text" id="cp-name" placeholder="First and last name" autocomplete="name"/>
+          </div>
+          <div class="form-group">
+            <label for="cp-phone">Phone number *</label>
+            <input type="tel" id="cp-phone" placeholder="(937) 000-0000" autocomplete="tel"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="cp-car">Vehicle (optional)</label>
+          <input type="text" id="cp-car" placeholder="2018 Honda Civic" autocomplete="off"/>
+        </div>
+        <div class="form-group">
+          <label for="cp-details">What are you looking for? *</label>
+          <textarea id="cp-details" placeholder="e.g. Exterior only, every 6 weeks, two cars at the same address…"></textarea>
+        </div>
+        <button type="submit" class="btn-submit" id="custom-plan-submit-btn">Send My Request — Opens Your Messages</button>
+        <div class="status-msg" id="custom-plan-status"></div>
+      </form>
+      <div class="booking-note">
+        <strong>How it works:</strong> Tapping "Send My Request" opens a pre-filled text to <strong>937-703-5192</strong> with exactly what you typed. Just hit send — I'll text you back with pricing and get it set up.
+      </div>
+    </div>
+  </div>
+
   <div class="reveal" style="text-align:center;margin-top:36px">
     <a href="#booking" class="btn-hero-primary js-goto-booking" style="display:inline-flex">Book an Appointment</a>
   </div>
@@ -1626,17 +1662,17 @@
 
   <!-- ═══════════ DEALS & PLANS ═══════════ -->
   <details class="admin-accordion" id="admin-acc-deals">
-    <summary>🏷️ Deals &amp; Recurring Plans</summary>
+    <summary>🏷️ Deals &amp; Maintenance Details</summary>
     <div class="admin-accordion-body">
       <div class="admin-sec" style="margin-top:0">Deals</div>
       <div class="admin-row">
         <button type="button" class="admin-btn" id="admin-deals-btn" style="background:linear-gradient(135deg,var(--gold),var(--gold2));color:#0b0a08;border-color:var(--gold);font-weight:700">🏷️ Manage Deals</button>
       </div>
-      <div class="admin-sec">Recurring Plans</div>
+      <div class="admin-sec">Maintenance Details</div>
       <div style="font-size:.68rem;color:var(--muted);margin-bottom:8px;line-height:1.5">Set the discount % for each cadence and toggle which ones customers can pick. Customers still pay after every visit — this only changes the price.</div>
       <div id="admin-plans-rows"></div>
       <div class="admin-row">
-        <button type="button" class="admin-btn" id="admin-plans-save" style="background:linear-gradient(135deg,var(--gold),var(--gold2));color:#0b0a08;border-color:var(--gold);font-weight:700;width:100%">💾 Save Plans</button>
+        <button type="button" class="admin-btn" id="admin-plans-save" style="background:linear-gradient(135deg,var(--gold),var(--gold2));color:#0b0a08;border-color:var(--gold);font-weight:700;width:100%">💾 Save Maintenance Details</button>
       </div>
       <div id="admin-plans-status" style="font-size:.7rem;color:var(--muted);margin-bottom:2px;min-height:14px"></div>
     </div>
@@ -1960,7 +1996,7 @@ service cloud.firestore {
       <select id="be-deal" class="admin-sel" style="width:100%"><option value="">None</option></select>
     </div>
     <div class="deal-form-group">
-      <label>Recurring Plan (optional)</label>
+      <label>Maintenance Detail (optional)</label>
       <select id="be-plan" class="admin-sel" style="width:100%"><option value="">None — one-time</option></select>
     </div>
     <div class="deal-form-group">
@@ -2325,9 +2361,7 @@ var RECURRING_PLANS = [
   { key: "monthly",           group: "ongoing",  label: "Monthly",                       freq: "Every month, ongoing",                    discount: 10, enabled: true },
   { key: "bimonthly",         group: "ongoing",  label: "Bi-Monthly",                     freq: "Every 2 months, ongoing",                 discount: 15, enabled: true },
   { key: "trimonthly",        group: "ongoing",  label: "Tri-Monthly",                    freq: "Every 3 months, ongoing",                 discount: 20, enabled: true },
-  { key: "halfyear_monthly",  group: "halfyear", label: "Half-Year — Monthly",            freq: "Once a month for 6 months",               discount: 10, enabled: true },
-  { key: "halfyear_every2",   group: "halfyear", label: "Half-Year — Every Other Month",  freq: "Months 1, 3 &amp; 5 of a 6-month span",   discount: 15, enabled: true },
-  { key: "halfyear_every3",   group: "halfyear", label: "Half-Year — Every 3rd Month",    freq: "Months 1 &amp; 4 of a 6-month span",      discount: 20, enabled: true }
+  { key: "halfyear_monthly",  group: "halfyear", label: "Half-Year — Monthly",            freq: "Once a month for 6 months",               discount: 10, enabled: true }
 ];
 function planByKey(key) {
   for (var i = 0; i < RECURRING_PLANS.length; i++) {
@@ -2347,9 +2381,7 @@ var RECURRING_OCCURRENCE_OFFSETS = {
   monthly:           [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
   bimonthly:         [2, 4, 6, 8, 10],
   trimonthly:        [3, 6, 9],
-  halfyear_monthly:  [1, 2, 3, 4, 5],
-  halfyear_every2:   [2, 4],
-  halfyear_every3:   [3]
+  halfyear_monthly:  [1, 2, 3, 4, 5]
 };
 
 // Build the future occurrence booking records (NOT including the first/primary visit
@@ -3343,7 +3375,7 @@ function saveAdminPlans() {
   setPlanSettings(plansObj)
     .then(function() {
       statusEl.style.color = "#1e7a46";
-      statusEl.textContent = "✓ Plans saved — updated everywhere on the site.";
+      statusEl.textContent = "✓ Maintenance details saved — updated everywhere on the site.";
       setTimeout(function() { statusEl.textContent = ""; }, 3000);
     })
     .catch(function(e) {
@@ -3726,7 +3758,7 @@ function openSms(b) {
   if (b.plan) {
     var plan = planByKey(b.plan);
     if (plan) {
-      lines.push("🔁 Plan: " + plan.label + " (" + plan.freq.replace(/&amp;/g, "&") + ") — " + plan.discount + "% off every visit");
+      lines.push("🔁 Maintenance Detail: " + plan.label + " (" + plan.freq.replace(/&amp;/g, "&") + ") — " + plan.discount + "% off every visit");
       var planSvcInfo = null;
       for (var k = 0; k < SERVICE_INFO.length; k++) {
         if (SERVICE_INFO[k].key === b.service) { planSvcInfo = SERVICE_INFO[k]; break; }
@@ -3734,7 +3766,7 @@ function openSms(b) {
       if (planSvcInfo) {
         var ppr = calcPlanPrice(planSvcInfo, b.plan);
         lines.push("   Regular price: " + formatPriceRange(planSvcInfo.priceMin, planSvcInfo.priceMax));
-        lines.push("   Plan price:    " + formatPriceRange(ppr.min, ppr.max) + " (pay after this visit, as usual)");
+        lines.push("   Detail price:  " + formatPriceRange(ppr.min, ppr.max) + " (pay after this visit, as usual)");
       }
       if (b.recurringDates && b.recurringDates.length) {
         lines.push("   Future visits already on the calendar:");
@@ -4050,6 +4082,38 @@ function handleQuickBookBooking(e) {
     plan:    document.getElementById("qb-plan-type").value,
     notes:   document.getElementById("qb-notes").value.trim()
   }, "qb-status", document.getElementById("qb-submit-btn"));
+}
+
+// "Create Your Own" custom maintenance detail request (Plans page). Unlike the
+// preset plans above, this doesn't calculate a price or write a Firestore booking —
+// it just packages up whatever the customer typed and texts it straight to Micah,
+// who replies with pricing and adds it as a real plan by hand.
+function handleCustomPlanRequest(e) {
+  e.preventDefault();
+  var statusId = "custom-plan-status";
+  clearStatus(statusId);
+
+  var name    = document.getElementById("cp-name").value.trim();
+  var phone   = document.getElementById("cp-phone").value.trim();
+  var car     = document.getElementById("cp-car").value.trim();
+  var details = document.getElementById("cp-details").value.trim();
+
+  if (!name || !phone || !details) {
+    showStatus(statusId, "Please fill in all required fields (*).", "error");
+    return;
+  }
+  var phoneDigits = normalizePhone(phone);
+  if (!isValidUSPhone(phoneDigits)) {
+    showStatus(statusId, "Please enter a valid 10-digit US phone number.", "error");
+    return;
+  }
+
+  var lines = ["Custom maintenance detail request:", "Name: " + name, "Phone: " + phone];
+  if (car) lines.push("Vehicle: " + car);
+  lines.push("What they want: " + details);
+
+  showStatus(statusId, "Opening your messages — just hit send and I'll text you back with pricing.", "success");
+  window.location.href = "sms:" + PHONE + "?body=" + encodeURIComponent(lines.join("\n"));
 }
 
 // ── ADMIN AUTH ────────────────────────────────────────────────────────────────
@@ -4812,8 +4876,8 @@ function renderPlanCards() {
 // Populate the plan <select> on the main booking form, quick-book form, and admin booking editor
 function renderPlanOptions() {
   [
-    { id: "booking-plan", none: "One-time — no plan" },
-    { id: "qb-plan-type",  none: "One-time — no plan" },
+    { id: "booking-plan", none: "One-time — no maintenance detail" },
+    { id: "qb-plan-type",  none: "One-time — no maintenance detail" },
     { id: "be-plan",       none: "None — one-time" }
   ].forEach(function(cfg) {
     var sel = document.getElementById(cfg.id);
@@ -5292,6 +5356,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
   document.getElementById("booking-form").addEventListener("submit", handleBooking);
   document.getElementById("qb-booking-form").addEventListener("submit", handleQuickBookBooking);
+  document.getElementById("custom-plan-form").addEventListener("submit", handleCustomPlanRequest);
   document.getElementById("qb-exit-link").addEventListener("click", function(e) { e.preventDefault(); forgetRecognizedAccount(); });
 
   // "Already a Customer?" — cross-device recognition modal
