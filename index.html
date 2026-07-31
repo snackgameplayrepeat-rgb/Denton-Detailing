@@ -477,6 +477,7 @@
     .admin-panel-inner::-webkit-scrollbar{width:4px}.admin-panel-inner::-webkit-scrollbar-track{background:transparent}.admin-panel-inner::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15);border-radius:4px}
     .admin-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;cursor:grab;padding:2px 2px 8px;margin:-2px -2px 8px;border-bottom:1px solid rgba(0,0,0,.06);touch-action:none}
     .admin-header:active{cursor:grabbing}
+    .admin-panel.is-dragging,.modal.is-dragging{box-shadow:0 40px 90px rgba(0,0,0,.6),0 2px 0 rgba(255,255,255,.6) inset,0 0 0 1px rgba(255,255,255,.5)!important;transition:none!important}
     .admin-drag-dots{display:flex;gap:3px;margin-right:8px}
     .admin-drag-dots span{width:4px;height:4px;border-radius:50%;background:rgba(0,0,0,.18)}
     .admin-resize-handle{position:fixed;width:20px;height:20px;cursor:nwse-resize;z-index:101;touch-action:none}
@@ -493,6 +494,31 @@
     .admin-list-item{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--warm);font-size:.72rem;color:var(--ink2)}
     .admin-list-item:last-child{border-bottom:none}
     .admin-del{background:none;border:none;color:var(--danger);font-size:.72rem;cursor:pointer;font-weight:600}
+
+    /* ── Admin panel: collapsible sections ── */
+    .admin-accordion{border:1px solid rgba(0,0,0,.08);border-radius:10px;margin-bottom:8px;background:rgba(0,0,0,.015)}
+    .admin-accordion > summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;padding:10px 12px;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2);user-select:none;-webkit-user-select:none}
+    .admin-accordion > summary::-webkit-details-marker{display:none}
+    .admin-accordion > summary::before{content:'▸';display:inline-block;font-size:.68rem;color:var(--muted);transition:transform .2s;flex-shrink:0;order:2;margin-left:auto}
+    .admin-accordion[open] > summary::before{transform:rotate(90deg)}
+    .admin-accordion > summary:hover{background:rgba(0,0,0,.035)}
+    .admin-accordion-body{padding:2px 12px 12px}
+    .admin-acc-count{background:var(--gold2);color:#04140a;font-size:.65rem;font-weight:800;padding:1px 7px;border-radius:8px;letter-spacing:0;text-transform:none;order:1}
+
+    /* ── Admin notification bell — visible immediately on load if signed in ── */
+    .admin-bell{position:fixed;top:calc(env(safe-area-inset-top,0) + 14px);right:14px;z-index:98;width:46px;height:46px;border-radius:50%;background:rgba(10,10,10,.88);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.16);color:#fff;font-size:1.2rem;display:none;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 26px rgba(0,0,0,.45);transition:transform .15s ease}
+    .admin-bell.show{display:flex}
+    .admin-bell:hover{transform:scale(1.07)}
+    .admin-bell:active{transform:scale(.96)}
+    .admin-bell.ring{animation:bellring .6s ease}
+    @keyframes bellring{0%,100%{transform:rotate(0)}20%{transform:rotate(-16deg)}40%{transform:rotate(13deg)}60%{transform:rotate(-9deg)}80%{transform:rotate(5deg)}}
+    .admin-bell-badge{position:absolute;top:-3px;right:-3px;min-width:19px;height:19px;padding:0 5px;border-radius:10px;background:var(--danger);color:#fff;font-size:.64rem;font-weight:800;display:none;align-items:center;justify-content:center;box-shadow:0 0 0 2px rgba(10,10,10,.9)}
+    .admin-bell-badge.show{display:flex}
+
+    .admin-toast{position:fixed;top:calc(env(safe-area-inset-top,0) + 68px);right:14px;z-index:98;max-width:270px;background:#e8f8ee;border:1px solid #3dba72;color:#1a4a2e;border-radius:12px;padding:12px 14px;font-size:.78rem;line-height:1.5;box-shadow:0 14px 34px rgba(0,0,0,.4);opacity:0;transform:translateY(-10px);pointer-events:none;transition:opacity .25s ease,transform .25s ease}
+    .admin-toast.show{opacity:1;transform:translateY(0);pointer-events:auto}
+    .admin-toast strong{display:block;margin-bottom:2px}
+    @media(max-width:480px){.admin-bell{top:calc(env(safe-area-inset-top,0) + 8px);right:8px}.admin-toast{top:calc(env(safe-area-inset-top,0) + 60px);right:8px;max-width:calc(100vw - 32px)}}
     /* ── ACCOUNT LOOKUP MODAL (cross-device "log in" for returning customers) ── */
     .account-modal-bg{position:fixed;inset:0;z-index:150;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);padding:20px}
     .account-modal-bg.open{display:flex}
@@ -1529,9 +1555,191 @@
     </div>
   </div>
 
-  <!-- CONNECTION STATUS — auto-runs on open -->
-  <div class="admin-sec" style="display:flex;align-items:center;justify-content:space-between">
-    <span>🔌 Firebase Connection</span>
+  <!-- ═══════════ BOOKINGS (primary, default open) ═══════════ -->
+  <details class="admin-accordion" id="admin-acc-bookings" open>
+    <summary>📖 Bookings <span class="admin-acc-count" id="admin-acc-bookings-count"></span></summary>
+    <div class="admin-accordion-body">
+      <div class="admin-row">
+        <button type="button" class="admin-btn" id="admin-add-booking" style="background:linear-gradient(135deg,var(--teal),var(--teal2));color:#fff;border-color:var(--teal);font-weight:700">+ Add Booking</button>
+        <button type="button" class="admin-btn" id="admin-calendar-btn">📅 Calendar</button>
+      </div>
+      <div class="admin-list" id="admin-bookings-list">
+        <div style="font-size:.72rem;color:var(--muted)">No bookings yet.</div>
+      </div>
+    </div>
+  </details>
+
+  <!-- ═══════════ DEALS & PLANS ═══════════ -->
+  <details class="admin-accordion" id="admin-acc-deals">
+    <summary>🏷️ Deals &amp; Recurring Plans</summary>
+    <div class="admin-accordion-body">
+      <div class="admin-sec" style="margin-top:0">Deals</div>
+      <div class="admin-row">
+        <button type="button" class="admin-btn" id="admin-deals-btn" style="background:linear-gradient(135deg,var(--gold),var(--gold2));color:#0b0a08;border-color:var(--gold);font-weight:700">🏷️ Manage Deals</button>
+      </div>
+      <div class="admin-sec">Recurring Plans</div>
+      <div style="font-size:.68rem;color:var(--muted);margin-bottom:8px;line-height:1.5">Set the discount % for each cadence and toggle which ones customers can pick. Customers still pay after every visit — this only changes the price.</div>
+      <div id="admin-plans-rows"></div>
+      <div class="admin-row">
+        <button type="button" class="admin-btn" id="admin-plans-save" style="background:linear-gradient(135deg,var(--gold),var(--gold2));color:#0b0a08;border-color:var(--gold);font-weight:700;width:100%">💾 Save Plans</button>
+      </div>
+      <div id="admin-plans-status" style="font-size:.7rem;color:var(--muted);margin-bottom:2px;min-height:14px"></div>
+    </div>
+  </details>
+
+  <!-- ═══════════ PRICING ═══════════ -->
+  <details class="admin-accordion" id="admin-acc-pricing">
+    <summary>💵 Service Pricing</summary>
+    <div class="admin-accordion-body">
+      <div class="admin-row" style="align-items:center;gap:8px;margin-bottom:10px">
+        <label style="font-size:.72rem;color:var(--muted);flex-shrink:0">Display prices as</label>
+        <select id="admin-price-format" class="admin-sel" style="flex:1">
+          <option value="range">Range ($X–$Y)</option>
+          <option value="flat">Flat ($X only)</option>
+        </select>
+      </div>
+      <div id="admin-pricing-rows"></div>
+      <div class="admin-row">
+        <button type="button" class="admin-btn" id="admin-prices-save" style="background:linear-gradient(135deg,var(--gold),var(--gold2));color:#0b0a08;border-color:var(--gold);font-weight:700;width:100%">💾 Save Prices</button>
+      </div>
+      <div id="admin-prices-status" style="font-size:.7rem;color:var(--muted);margin-bottom:2px;min-height:14px"></div>
+    </div>
+  </details>
+
+  <!-- ═══════════ AVAILABILITY & SLOTS ═══════════ -->
+  <details class="admin-accordion" id="admin-acc-availability">
+    <summary>📅 Availability &amp; Slots</summary>
+    <div class="admin-accordion-body">
+      <div class="admin-sec" style="margin-top:0">Average Availability (Weekday vs Weekend)</div>
+      <div class="admin-row" style="align-items:center">
+        <label style="font-size:.72rem;color:var(--ink2);width:64px;flex-shrink:0">Weekdays</label>
+        <input type="number" id="admin-weekday-slots" min="0" value="2"
+          style="flex:1;padding:6px 10px;border-radius:8px;border:1.5px solid var(--warm);font-size:.85rem;background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif;text-align:center;appearance:textfield;-moz-appearance:textfield"/>
+      </div>
+      <div class="admin-row" style="align-items:center">
+        <label style="font-size:.72rem;color:var(--ink2);width:64px;flex-shrink:0">Weekends</label>
+        <input type="number" id="admin-weekend-slots" min="0" value="1"
+          style="flex:1;padding:6px 10px;border-radius:8px;border:1.5px solid var(--warm);font-size:.85rem;background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif;text-align:center;appearance:textfield;-moz-appearance:textfield"/>
+        <button type="button" class="admin-btn" id="admin-default-slots-save" style="background:var(--teal);color:#fff;border-color:var(--teal)">Save Both</button>
+      </div>
+      <div style="font-size:.68rem;color:var(--muted);margin-bottom:6px;line-height:1.5">Weekdays = Mon–Fri, Weekends = Sat–Sun. Applies across the whole calendar &amp; to clients. Override a single date below.</div>
+      <div id="admin-default-slots-status" style="font-size:.7rem;color:var(--muted);margin-bottom:2px;min-height:14px"></div>
+
+      <div class="admin-sec">Override a Specific Date</div>
+      <div class="admin-row">
+        <select id="admin-date-select" class="admin-sel"></select>
+        <button type="button" class="admin-btn" id="admin-add-slot">+ Slot</button>
+        <button type="button" class="admin-btn" id="admin-remove-slot">− Slot</button>
+      </div>
+      <div style="font-size:.75rem;color:var(--muted);margin-bottom:6px">
+        Slots: <span id="admin-current-slots" class="admin-badge">—</span>
+      </div>
+    </div>
+  </details>
+
+  <!-- ═══════════ CUSTOMERS ═══════════ -->
+  <details class="admin-accordion" id="admin-acc-customers">
+    <summary>👤 Customers</summary>
+    <div class="admin-accordion-body">
+      <div style="font-size:.7rem;color:var(--muted);margin-bottom:8px;line-height:1.5">For customers who booked before quick-book existed — save their info here so they can use "Returning Customer" next time. Re-entering a phone number that's already saved updates that profile instead of duplicating it.</div>
+      <div class="admin-row">
+        <input type="tel" id="admin-add-cust-phone" placeholder="Phone (937) 000-0000" class="admin-sel"/>
+      </div>
+      <div class="admin-row">
+        <input type="text" id="admin-add-cust-name" placeholder="Full name" class="admin-sel"/>
+      </div>
+      <div class="admin-row">
+        <input type="text" id="admin-add-cust-car" placeholder="Vehicle (e.g. 2018 Honda Civic)" class="admin-sel"/>
+      </div>
+      <div class="admin-row">
+        <input type="text" id="admin-add-cust-address" placeholder="Address" class="admin-sel"/>
+      </div>
+      <div class="admin-row">
+        <button type="button" class="admin-btn" id="admin-add-cust-save" style="flex:1;background:var(--teal);color:#fff;border-color:var(--teal)">Save Customer</button>
+      </div>
+      <div id="admin-add-cust-status" style="font-size:.7rem;color:var(--muted);margin-bottom:6px;min-height:14px"></div>
+    </div>
+  </details>
+
+  <!-- ═══════════ STATS ═══════════ -->
+  <details class="admin-accordion" id="admin-acc-stats">
+    <summary>📊 Homepage Stats</summary>
+    <div class="admin-accordion-body">
+      <div class="admin-sec" style="margin-top:0">Cars Cleaned Counter</div>
+      <div class="admin-row">
+        <button type="button" class="admin-btn" id="admin-cars-dec">−</button>
+        <input type="number" id="admin-cars-input" min="0" value="0"
+          style="flex:1;padding:6px 10px;border-radius:8px;border:1.5px solid var(--warm);font-size:.85rem;background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif;text-align:center;appearance:textfield;-moz-appearance:textfield"/>
+        <button type="button" class="admin-btn" id="admin-cars-inc">+</button>
+        <button type="button" class="admin-btn" id="admin-cars-save" style="background:var(--teal);color:#fff;border-color:var(--teal)">Save</button>
+      </div>
+      <div id="admin-cars-status" style="font-size:.7rem;color:var(--muted);margin-bottom:2px;min-height:14px"></div>
+
+      <div class="admin-sec">5-Star Reviews Counter</div>
+      <div style="font-size:.7rem;color:var(--muted);margin-bottom:8px;line-height:1.5">This number just powers the count-up stat on the homepage — it doesn't pull from Google automatically. Check your Google Business Profile every so often and update this to match your real 5-star review count.</div>
+      <div class="admin-row">
+        <button type="button" class="admin-btn" id="admin-reviews-dec">−</button>
+        <input type="number" id="admin-reviews-input" min="0" value="0"
+          style="flex:1;padding:6px 10px;border-radius:8px;border:1.5px solid var(--warm);font-size:.85rem;background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif;text-align:center;appearance:textfield;-moz-appearance:textfield"/>
+        <button type="button" class="admin-btn" id="admin-reviews-inc">+</button>
+        <button type="button" class="admin-btn" id="admin-reviews-save" style="background:var(--teal);color:#fff;border-color:var(--teal)">Save</button>
+      </div>
+      <div id="admin-reviews-status" style="font-size:.7rem;color:var(--muted);margin-bottom:2px;min-height:14px"></div>
+    </div>
+  </details>
+
+  <!-- ═══════════ SITE CONTENT ═══════════ -->
+  <details class="admin-accordion" id="admin-acc-content">
+    <summary>✏️ Site Text Editing</summary>
+    <div class="admin-accordion-body">
+      <div style="font-size:.72rem;color:var(--muted);margin-bottom:8px;line-height:1.5">Turn this on, then click any dashed-outline text anywhere on the live site to edit it in place. Click away to save.</div>
+      <div class="admin-row">
+        <button type="button" class="admin-btn" id="admin-edit-mode-btn" style="flex:1;background:linear-gradient(135deg,#ffd23f,#ffb800);color:#1c1c1c;border-color:#ffb800;font-weight:700">✏️ Enable Text Editing</button>
+      </div>
+      <div class="admin-row">
+        <button type="button" class="admin-btn" id="admin-reset-all-text-btn" style="color:var(--danger);border-color:rgba(224,82,82,.3)">↺ Reset All Text to Defaults</button>
+      </div>
+      <div id="admin-edit-mode-status" style="font-size:.68rem;color:var(--muted);margin-bottom:2px;min-height:14px"></div>
+    </div>
+  </details>
+
+  <!-- ═══════════ GALLERY ═══════════ -->
+  <details class="admin-accordion" id="admin-acc-gallery">
+    <summary>🖼️ Gallery Photos &amp; Videos</summary>
+    <div class="admin-accordion-body">
+      <div style="font-size:.72rem;color:var(--muted);margin-bottom:8px;line-height:1.5">Use "Add Photo" or "Add Before &amp; After" in the Photos page when logged in.</div>
+      <div class="admin-row" style="flex-wrap:wrap;gap:6px">
+        <button type="button" class="admin-btn" id="admin-gallery-scroll-btn" style="flex:1">↓ Jump to Gallery</button>
+        <button type="button" class="admin-btn" id="admin-gallery-clear-btn" style="color:var(--danger);border-color:rgba(224,82,82,.3)">🗑 Clear All</button>
+      </div>
+      <div class="admin-row" style="flex-wrap:wrap;gap:6px;margin-top:4px">
+        <button type="button" class="admin-btn" id="admin-gallery-sync-btn" style="flex:1;background:var(--teal);color:#fff;border-color:var(--teal)">☁️ Push All to Cloud</button>
+      </div>
+      <div id="admin-gallery-sync-status" style="font-size:.68rem;color:var(--muted);min-height:14px;margin-top:4px;line-height:1.5"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:6px" id="admin-gallery-thumbs"></div>
+    </div>
+  </details>
+
+  <!-- ═══════════ APPEARANCE ═══════════ -->
+  <details class="admin-accordion" id="admin-acc-appearance">
+    <summary>🎨 Panel Appearance</summary>
+    <div class="admin-accordion-body">
+      <div class="admin-row" style="align-items:center;gap:8px">
+        <input type="color" id="admin-panel-color" value="#ffffff"
+          style="width:38px;height:30px;padding:0;border:1.5px solid var(--warm);border-radius:7px;cursor:pointer;background:none;flex-shrink:0"/>
+        <div style="display:flex;gap:6px;flex:1" id="admin-panel-color-presets"></div>
+        <button type="button" class="admin-btn" id="admin-panel-color-reset" style="flex-shrink:0">Reset</button>
+      </div>
+      <div style="font-size:.68rem;color:var(--muted);margin-bottom:6px">Tints the Admin Panel &amp; Calendar glass background. Saved on this device.</div>
+    </div>
+  </details>
+
+  <!-- ═══════════ CONNECTION / SETUP (advanced, default closed) ═══════════ -->
+  <details class="admin-accordion" id="admin-acc-connection">
+    <summary>🔌 Connection &amp; Setup</summary>
+    <div class="admin-accordion-body">
+  <div class="admin-sec" style="display:flex;align-items:center;justify-content:space-between;margin-top:0">
+    <span>Firebase Connection</span>
     <button type="button" class="admin-btn" id="admin-test-btn" style="font-size:.68rem;padding:4px 10px">Re-test</button>
   </div>
   <div id="admin-conn-status" style="font-size:.72rem;color:var(--muted);margin-bottom:8px;line-height:1.6">
@@ -1606,138 +1814,17 @@ service cloud.firestore {
 }</code>
     <button type="button" id="admin-copy-rules" class="admin-btn" style="margin-top:6px;font-size:.68rem">📋 Copy rules</button>
   </div>
-
-  <div class="admin-sec">✏️ Site Text Editing</div>
-  <div style="font-size:.72rem;color:var(--muted);margin-bottom:8px;line-height:1.5">Turn this on, then click any dashed-outline text anywhere on the live site to edit it in place. Click away to save.</div>
-  <div class="admin-row">
-    <button type="button" class="admin-btn" id="admin-edit-mode-btn" style="flex:1;background:linear-gradient(135deg,#ffd23f,#ffb800);color:#1c1c1c;border-color:#ffb800;font-weight:700">✏️ Enable Text Editing</button>
-  </div>
-  <div class="admin-row">
-    <button type="button" class="admin-btn" id="admin-reset-all-text-btn" style="color:var(--danger);border-color:rgba(224,82,82,.3)">↺ Reset All Text to Defaults</button>
-  </div>
-  <div id="admin-edit-mode-status" style="font-size:.68rem;color:var(--muted);margin-bottom:2px;min-height:14px"></div>
-
-  <div class="admin-sec">👤 Add Existing Customer</div>
-  <div style="font-size:.7rem;color:var(--muted);margin-bottom:8px;line-height:1.5">For customers who booked before quick-book existed — save their info here so they can use "Returning Customer" next time. Re-entering a phone number that's already saved updates that profile instead of duplicating it.</div>
-  <div class="admin-row">
-    <input type="tel" id="admin-add-cust-phone" placeholder="Phone (937) 000-0000" class="admin-sel"/>
-  </div>
-  <div class="admin-row">
-    <input type="text" id="admin-add-cust-name" placeholder="Full name" class="admin-sel"/>
-  </div>
-  <div class="admin-row">
-    <input type="text" id="admin-add-cust-car" placeholder="Vehicle (e.g. 2018 Honda Civic)" class="admin-sel"/>
-  </div>
-  <div class="admin-row">
-    <input type="text" id="admin-add-cust-address" placeholder="Address" class="admin-sel"/>
-  </div>
-  <div class="admin-row">
-    <button type="button" class="admin-btn" id="admin-add-cust-save" style="flex:1;background:var(--teal);color:#fff;border-color:var(--teal)">Save Customer</button>
-  </div>
-  <div id="admin-add-cust-status" style="font-size:.7rem;color:var(--muted);margin-bottom:6px;min-height:14px"></div>
-
-  <div class="admin-sec">Cars Cleaned Counter</div>
-  <div class="admin-row">
-    <button type="button" class="admin-btn" id="admin-cars-dec">−</button>
-    <input type="number" id="admin-cars-input" min="0" value="0"
-      style="flex:1;padding:6px 10px;border-radius:8px;border:1.5px solid var(--warm);font-size:.85rem;background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif;text-align:center;appearance:textfield;-moz-appearance:textfield"/>
-    <button type="button" class="admin-btn" id="admin-cars-inc">+</button>
-    <button type="button" class="admin-btn" id="admin-cars-save" style="background:var(--teal);color:#fff;border-color:var(--teal)">Save</button>
-  </div>
-  <div id="admin-cars-status" style="font-size:.7rem;color:var(--muted);margin-bottom:2px;min-height:14px"></div>
-
-  <div class="admin-sec">5-Star Reviews Counter</div>
-  <div style="font-size:.7rem;color:var(--muted);margin-bottom:8px;line-height:1.5">This number just powers the count-up stat on the homepage — it doesn't pull from Google automatically. Check your Google Business Profile every so often and update this to match your real 5-star review count.</div>
-  <div class="admin-row">
-    <button type="button" class="admin-btn" id="admin-reviews-dec">−</button>
-    <input type="number" id="admin-reviews-input" min="0" value="0"
-      style="flex:1;padding:6px 10px;border-radius:8px;border:1.5px solid var(--warm);font-size:.85rem;background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif;text-align:center;appearance:textfield;-moz-appearance:textfield"/>
-    <button type="button" class="admin-btn" id="admin-reviews-inc">+</button>
-    <button type="button" class="admin-btn" id="admin-reviews-save" style="background:var(--teal);color:#fff;border-color:var(--teal)">Save</button>
-  </div>
-  <div id="admin-reviews-status" style="font-size:.7rem;color:var(--muted);margin-bottom:2px;min-height:14px"></div>
-
-  <div class="admin-sec">Average Availability (Weekday vs Weekend)</div>
-  <div class="admin-row" style="align-items:center">
-    <label style="font-size:.72rem;color:var(--ink2);width:64px;flex-shrink:0">Weekdays</label>
-    <input type="number" id="admin-weekday-slots" min="0" value="2"
-      style="flex:1;padding:6px 10px;border-radius:8px;border:1.5px solid var(--warm);font-size:.85rem;background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif;text-align:center;appearance:textfield;-moz-appearance:textfield"/>
-  </div>
-  <div class="admin-row" style="align-items:center">
-    <label style="font-size:.72rem;color:var(--ink2);width:64px;flex-shrink:0">Weekends</label>
-    <input type="number" id="admin-weekend-slots" min="0" value="1"
-      style="flex:1;padding:6px 10px;border-radius:8px;border:1.5px solid var(--warm);font-size:.85rem;background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif;text-align:center;appearance:textfield;-moz-appearance:textfield"/>
-    <button type="button" class="admin-btn" id="admin-default-slots-save" style="background:var(--teal);color:#fff;border-color:var(--teal)">Save Both</button>
-  </div>
-  <div style="font-size:.68rem;color:var(--muted);margin-bottom:6px;line-height:1.5">Weekdays = Mon–Fri, Weekends = Sat–Sun. Applies across the whole calendar &amp; to clients. Override a single date below.</div>
-  <div id="admin-default-slots-status" style="font-size:.7rem;color:var(--muted);margin-bottom:2px;min-height:14px"></div>
-
-  <div class="admin-sec">Panel Appearance</div>
-  <div class="admin-row" style="align-items:center;gap:8px">
-    <input type="color" id="admin-panel-color" value="#ffffff"
-      style="width:38px;height:30px;padding:0;border:1.5px solid var(--warm);border-radius:7px;cursor:pointer;background:none;flex-shrink:0"/>
-    <div style="display:flex;gap:6px;flex:1" id="admin-panel-color-presets"></div>
-    <button type="button" class="admin-btn" id="admin-panel-color-reset" style="flex-shrink:0">Reset</button>
-  </div>
-  <div style="font-size:.68rem;color:var(--muted);margin-bottom:6px">Tints the Admin Panel &amp; Calendar glass background. Saved on this device.</div>
-
-  <div class="admin-sec">Override a Specific Date</div>
-  <div class="admin-row">
-    <select id="admin-date-select" class="admin-sel"></select>
-    <button type="button" class="admin-btn" id="admin-add-slot">+ Slot</button>
-    <button type="button" class="admin-btn" id="admin-remove-slot">− Slot</button>
-  </div>
-  <div style="font-size:.75rem;color:var(--muted);margin-bottom:6px">
-    Slots: <span id="admin-current-slots" class="admin-badge">—</span>
-  </div>
-
-  <div class="admin-sec">Service Pricing</div>
-  <div class="admin-row" style="align-items:center;gap:8px;margin-bottom:10px">
-    <label style="font-size:.72rem;color:var(--muted);flex-shrink:0">Display prices as</label>
-    <select id="admin-price-format" class="admin-sel" style="flex:1">
-      <option value="range">Range ($X–$Y)</option>
-      <option value="flat">Flat ($X only)</option>
-    </select>
-  </div>
-  <div id="admin-pricing-rows"></div>
-  <div class="admin-row">
-    <button type="button" class="admin-btn" id="admin-prices-save" style="background:linear-gradient(135deg,var(--gold),var(--gold2));color:#0b0a08;border-color:var(--gold);font-weight:700;width:100%">💾 Save Prices</button>
-  </div>
-  <div id="admin-prices-status" style="font-size:.7rem;color:var(--muted);margin-bottom:2px;min-height:14px"></div>
-
-  <div class="admin-sec">Bookings</div>
-  <div class="admin-row">
-    <button type="button" class="admin-btn" id="admin-add-booking" style="background:linear-gradient(135deg,var(--teal),var(--teal2));color:#fff;border-color:var(--teal);font-weight:700">+ Add Booking</button>
-    <button type="button" class="admin-btn" id="admin-calendar-btn">📅 Calendar</button>
-  </div>
-  <div class="admin-list" id="admin-bookings-list">
-    <div style="font-size:.72rem;color:var(--muted)">No bookings yet.</div>
-  </div>
-  <div class="admin-sec">Deals</div>
-  <div class="admin-row">
-    <button type="button" class="admin-btn" id="admin-deals-btn" style="background:linear-gradient(135deg,var(--gold),var(--gold2));color:#0b0a08;border-color:var(--gold);font-weight:700">🏷️ Manage Deals</button>
-  </div>
-  <div class="admin-sec">Recurring Plans</div>
-  <div style="font-size:.68rem;color:var(--muted);margin-bottom:8px;line-height:1.5">Set the discount % for each cadence and toggle which ones customers can pick. Customers still pay after every visit — this only changes the price.</div>
-  <div id="admin-plans-rows"></div>
-  <div class="admin-row">
-    <button type="button" class="admin-btn" id="admin-plans-save" style="background:linear-gradient(135deg,var(--gold),var(--gold2));color:#0b0a08;border-color:var(--gold);font-weight:700;width:100%">💾 Save Plans</button>
-  </div>
-  <div id="admin-plans-status" style="font-size:.7rem;color:var(--muted);margin-bottom:2px;min-height:14px"></div>
-  <div class="admin-sec">Gallery Photos &amp; Videos</div>
-  <div style="font-size:.72rem;color:var(--muted);margin-bottom:8px;line-height:1.5">Use "Add Photo" or "Add Before &amp; After" in the Photos page when logged in.</div>
-  <div class="admin-row" style="flex-wrap:wrap;gap:6px">
-    <button type="button" class="admin-btn" id="admin-gallery-scroll-btn" style="flex:1">↓ Jump to Gallery</button>
-    <button type="button" class="admin-btn" id="admin-gallery-clear-btn" style="color:var(--danger);border-color:rgba(224,82,82,.3)">🗑 Clear All</button>
-  </div>
-  <div class="admin-row" style="flex-wrap:wrap;gap:6px;margin-top:4px">
-    <button type="button" class="admin-btn" id="admin-gallery-sync-btn" style="flex:1;background:var(--teal);color:#fff;border-color:var(--teal)">☁️ Push All to Cloud</button>
-  </div>
-  <div id="admin-gallery-sync-status" style="font-size:.68rem;color:var(--muted);min-height:14px;margin-top:4px;line-height:1.5"></div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:6px" id="admin-gallery-thumbs"></div>
+    </div>
+  </details>
 </div>
 </div>
 <div class="admin-resize-handle" id="admin-resize-handle"></div>
+
+<!-- ADMIN NEW-BOOKING BELL — appears immediately on load whenever signed in -->
+<button type="button" class="admin-bell" id="admin-bell" title="New bookings" aria-label="New bookings">
+  🔔<span class="admin-bell-badge" id="admin-bell-badge">0</span>
+</button>
+<div class="admin-toast" id="admin-toast"></div>
 
 <!-- CALENDAR MODAL -->
 <div class="modal-bg" id="cal-modal">
@@ -2912,6 +2999,7 @@ function startListeners() {
       });
       _bkReady = true; checkReady();
       if (_appStarted) { renderDatePicker(); renderAvailPanel(); renderAdminBookings(); renderCalendarIfOpen(); renderDeals(); }
+      updateAdminBell();
     },
     function(err) { console.error("bookings snapshot:", err); _bkReady = true; checkReady(); }
   );
@@ -3930,6 +4018,7 @@ function adminSignIn() {
 function adminSignOut() {
   auth.signOut().then(function() {
     document.getElementById("admin-panel").style.display = "none";
+    updateAdminBell();
   });
 }
 
@@ -3957,6 +4046,10 @@ auth.onAuthStateChanged(function(user) {
   if (!user && document.getElementById("admin-panel").style.display === "block") {
     document.getElementById("admin-panel").style.display = "none";
   }
+  // Show/hide the always-on bell + pop the "new booking" toast the instant we
+  // know whether this visitor is the signed-in admin — no need to open the
+  // panel first.
+  updateAdminBell();
 });
 
 // ── FLOATING PANELS — drag anywhere, resize, remembers position (FaceTime-style) ──
@@ -4046,41 +4139,62 @@ function makeFloatingPanel(panel, dragHandle, resizeHandle, storageKey, opts) {
   setTimeout(positionResizeHandle, 50);
 
   // ── Dragging ──
-  var dragging = false, startX, startY, startLeft, startTop;
-  dragHandle.addEventListener("pointerdown", function(e) {
+  // NOTE: move/up/cancel are bound on window (in addition to setPointerCapture on
+  // the handle itself). Relying on pointer-capture alone is what caused the panel
+  // to "stick" mid-drag in some embedded/in-app browsers where capture on a plain
+  // <div> isn't honored reliably — binding to window guarantees the drag keeps
+  // tracking the pointer no matter what capture does.
+  var dragging = false, startX, startY, startLeft, startTop, dragPointerId = null;
+  function beginDrag(e) {
     if (e.target.closest("button")) return; // don't hijack header buttons
     var r = panel.getBoundingClientRect();
     panel.style.left = r.left + "px"; panel.style.top = r.top + "px";
     panel.style.right = "auto"; panel.style.bottom = "auto";
     dragging = true;
+    dragPointerId = e.pointerId;
     startX = e.clientX; startY = e.clientY;
     startLeft = r.left; startTop = r.top;
-    dragHandle.setPointerCapture(e.pointerId);
+    try { dragHandle.setPointerCapture(e.pointerId); } catch (err) {}
+    document.body.style.userSelect = "none";
+    panel.classList.add("is-dragging");
     e.preventDefault();
-  });
-  dragHandle.addEventListener("pointermove", function(e) {
+  }
+  function moveDrag(e) {
     if (!dragging) return;
+    if (dragPointerId !== null && e.pointerId !== undefined && e.pointerId !== dragPointerId) return;
     var r = panel.getBoundingClientRect();
     var pos = clampPos(startLeft + (e.clientX - startX), startTop + (e.clientY - startY), r.width, r.height);
     panel.style.left = pos.left + "px"; panel.style.top = pos.top + "px";
     positionResizeHandle();
-  });
-  function endDrag() { if (dragging) { dragging = false; persist(); } }
-  dragHandle.addEventListener("pointerup", endDrag);
-  dragHandle.addEventListener("pointercancel", endDrag);
+  }
+  function endDrag() {
+    if (!dragging) return;
+    dragging = false;
+    dragPointerId = null;
+    document.body.style.userSelect = "";
+    panel.classList.remove("is-dragging");
+    persist();
+  }
+  dragHandle.addEventListener("pointerdown", beginDrag);
+  window.addEventListener("pointermove", moveDrag);
+  window.addEventListener("pointerup", endDrag);
+  window.addEventListener("pointercancel", endDrag);
 
   // ── Resizing — uniform scale only, so text/images never distort ──
   if (resizeHandle) {
-    var resizing = false, startFactor;
+    var resizing = false, startFactor, resizePointerId = null;
     resizeHandle.addEventListener("pointerdown", function(e) {
       resizing = true;
+      resizePointerId = e.pointerId;
       startX = e.clientX; startY = e.clientY;
       startFactor = factor;
-      resizeHandle.setPointerCapture(e.pointerId);
+      try { resizeHandle.setPointerCapture(e.pointerId); } catch (err) {}
+      document.body.style.userSelect = "none";
       e.preventDefault(); e.stopPropagation();
     });
-    resizeHandle.addEventListener("pointermove", function(e) {
+    window.addEventListener("pointermove", function(e) {
       if (!resizing) return;
+      if (resizePointerId !== null && e.pointerId !== undefined && e.pointerId !== resizePointerId) return;
       // Average the horizontal & vertical drag intent into ONE uniform scale factor —
       // this is what keeps every image/button/line of text scaling as a perfect,
       // undistorted whole instead of stretching independently on each axis.
@@ -4089,9 +4203,14 @@ function makeFloatingPanel(panel, dragHandle, resizeHandle, storageKey, opts) {
       applyFactor(startFactor + (dxFactor + dyFactor) / 2);
       positionResizeHandle();
     });
-    function endResize() { if (resizing) { resizing = false; persist(); } }
-    resizeHandle.addEventListener("pointerup", endResize);
-    resizeHandle.addEventListener("pointercancel", endResize);
+    function endResize() {
+      if (!resizing) return;
+      resizing = false; resizePointerId = null;
+      document.body.style.userSelect = "";
+      persist();
+    }
+    window.addEventListener("pointerup", endResize);
+    window.addEventListener("pointercancel", endResize);
   }
 
   return { reset: reset };
@@ -4312,17 +4431,15 @@ function saveSeenIds(ids) {
   try { localStorage.setItem(SEEN_KEY, JSON.stringify(ids)); } catch(e) {}
 }
 
-function showNewBookingsAlert() {
+// Pure computation — figures out what's "new" since last seen, without
+// mutating anything, so both the panel notice and the always-visible bell
+// badge can share one source of truth.
+function computeNewBookingsInfo() {
   var seen   = getSeenIds();
   var seenSet = {};
   seen.forEach(function(id) { seenSet[id] = true; });
 
   var newBks = bookings.filter(function(b) { return !seenSet[b.id]; });
-
-  // Mark all current bookings as seen for next time
-  saveSeenIds(bookings.map(function(b) { return b.id; }));
-
-  if (!newBks.length) return;
 
   // A single plan booking silently creates several future /bookings docs
   // (isRecurringOccurrence:true) so they show up on the calendar. Roll those into
@@ -4343,17 +4460,8 @@ function showNewBookingsAlert() {
   });
 
   var visibleCount = primaries.length + Object.keys(orphanIds).length;
-  if (!visibleCount) return;
 
-  // Build a small notice at the top of the admin panel
-  var existing = document.getElementById("admin-new-bk-notice");
-  if (existing) existing.remove();
-
-  var notice = document.createElement("div");
-  notice.id = "admin-new-bk-notice";
-  notice.style.cssText = "background:#e8f8ee;border:1px solid #3dba72;border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:.78rem;color:#1a4a2e";
-
-  var lines = ["<strong>🔔 " + visibleCount + " new booking" + (visibleCount > 1 ? "s" : "") + " since last visit:</strong>"];
+  var lines = [];
   primaries.forEach(function(b) {
     var planNote = "";
     if (b.plan) {
@@ -4368,12 +4476,87 @@ function showNewBookingsAlert() {
     var p = planByKey(anyOcc.plan);
     lines.push("• " + (anyOcc.name || "Unknown") + " — new future visit(s) added to their " + (p ? p.label : "recurring") + " plan");
   });
-  notice.innerHTML = lines.join("<br>");
+
+  return { count: visibleCount, lines: lines };
+}
+
+function markBookingsSeen() {
+  saveSeenIds(bookings.map(function(b) { return b.id; }));
+}
+
+function showNewBookingsAlert() {
+  var info = computeNewBookingsInfo();
+
+  // Mark all current bookings as seen for next time — the panel notice (and
+  // opening the panel at all) counts as "having looked."
+  markBookingsSeen();
+  updateAdminBell();
+
+  var existing = document.getElementById("admin-new-bk-notice");
+  if (existing) existing.remove();
+  if (!info.count) return;
+
+  var notice = document.createElement("div");
+  notice.id = "admin-new-bk-notice";
+  notice.style.cssText = "background:#e8f8ee;border:1px solid #3dba72;border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:.78rem;color:#1a4a2e";
+  notice.innerHTML = ["<strong>🔔 " + info.count + " new booking" + (info.count > 1 ? "s" : "") + " since last visit:</strong>"].concat(info.lines).join("<br>");
 
   var panel = document.getElementById("admin-panel");
   var header = panel.querySelector(".admin-header");
   header.insertAdjacentElement("afterend", notice);
 }
+
+// ── ADMIN BELL — visible the instant the site loads (if already signed in),
+// independent of whether the admin panel itself is open. This is what makes
+// a new booking impossible to miss instead of something you only find by
+// opening the panel and scrolling.
+var _bellInitialCheckDone = false;
+function updateAdminBell() {
+  var bell = document.getElementById("admin-bell");
+  if (!bell) return;
+  var signedIn = !!(typeof auth !== "undefined" && auth.currentUser);
+  if (!signedIn) { bell.classList.remove("show"); _bellInitialCheckDone = false; return; }
+  bell.classList.add("show");
+
+  var info = computeNewBookingsInfo();
+  var badge = document.getElementById("admin-bell-badge");
+  var panelOpen = document.getElementById("admin-panel").style.display === "block";
+
+  if (info.count > 0 && !panelOpen) {
+    badge.textContent = info.count > 99 ? "99+" : String(info.count);
+    badge.classList.add("show");
+  } else {
+    badge.classList.remove("show");
+  }
+
+  // Only pop the toast + ring the bell once per fresh page load, the first
+  // moment we know both "who's signed in" and "what bookings exist."
+  if (!_bellInitialCheckDone) {
+    _bellInitialCheckDone = true;
+    if (info.count > 0 && !panelOpen) {
+      bell.classList.remove("ring"); void bell.offsetWidth; bell.classList.add("ring");
+      var toast = document.getElementById("admin-toast");
+      toast.innerHTML = "<strong>🔔 " + info.count + " new booking" + (info.count > 1 ? "s" : "") + "</strong>" + info.lines.slice(0, 3).join("<br>") + (info.lines.length > 3 ? "<br>…" : "");
+      toast.classList.add("show");
+      setTimeout(function() { toast.classList.remove("show"); }, 7000);
+    }
+  }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+  var bell = document.getElementById("admin-bell");
+  if (bell) {
+    bell.addEventListener("click", function() {
+      document.getElementById("admin-toast").classList.remove("show");
+      openAdminPanel();
+      var accB = document.getElementById("admin-acc-bookings");
+      if (accB) {
+        accB.open = true;
+        setTimeout(function() { accB.scrollIntoView({ behavior: "smooth", block: "start" }); }, 60);
+      }
+    });
+  }
+});
 
 
 // ── DEALS — HELPERS & RENDER ──────────────────────────────────────────────────
@@ -5022,6 +5205,7 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("admin-panel").style.display = "none";
     var notice = document.getElementById("admin-new-bk-notice");
     if (notice) notice.remove();
+    updateAdminBell();
   });
   // Cars cleaned counter
   document.getElementById("admin-cars-inc").addEventListener("click", function() {
