@@ -538,8 +538,11 @@
         padding:calc(env(safe-area-inset-top,0) + 14px) 14px calc(env(safe-area-inset-bottom,0) + 24px)!important;
       }
       .admin-resize-handle{display:none}
-      .admin-header{cursor:default}
-      .admin-title{font-size:1rem}
+      .admin-header{cursor:default;flex-wrap:nowrap;gap:8px}
+      .admin-header .admin-drag-dots{display:none}
+      .admin-title{font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+      #admin-reset-layout-btn,#cal-reset-layout-btn{display:none} /* dragging/resizing is off on phones, so this control has nothing to do */
+      .admin-close,.modal-close{font-size:1.7rem;padding:2px 6px;flex-shrink:0}
       .admin-accordion > summary{padding:14px 12px;font-size:.8rem}
       .admin-accordion-body{padding:4px 12px 16px}
       .admin-btn{padding:11px 14px;font-size:.85rem;border-radius:8px}
@@ -550,16 +553,24 @@
       .admin-list-item-label{font-size:.82rem;white-space:normal}
       .admin-list-item-status{font-size:.68rem}
       .admin-sel{padding:10px 12px;font-size:.85rem}
-      .admin-close{font-size:1.6rem;padding:4px 8px}
 
       #cal-modal .modal{
         top:0!important;left:0!important;right:0!important;bottom:0!important;
         width:100%!important;height:100%!important;max-width:100vw;max-height:100vh;min-width:0;min-height:0;
         border-radius:0;
       }
-      #cal-modal .modal-inner{width:100%!important;height:100%!important;transform:none!important;padding:16px!important}
+      #cal-modal .modal-inner{
+        width:100%!important;height:100%!important;transform:none!important;
+        padding:calc(env(safe-area-inset-top,0) + 14px) 14px calc(env(safe-area-inset-bottom,0) + 24px)!important;
+      }
       #cal-modal .modal-resize-handle{display:none}
+      #cal-modal .modal-head{flex-wrap:nowrap;gap:8px}
+      #cal-modal .modal-head h2{font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
       .cal-bk-item-actions .admin-del{font-size:.85rem;padding:8px 4px;font-weight:700}
+
+      /* Status modal — comfortable full-width tap targets on phones too */
+      #status-modal{padding:0}
+      #status-modal .deal-modal{width:100%;max-width:100%;min-height:100%;border-radius:0;padding:calc(env(safe-area-inset-top,0) + 20px) 18px calc(env(safe-area-inset-bottom,0) + 20px)}
     }
     /* ── ACCOUNT LOOKUP MODAL (cross-device "log in" for returning customers) ── */
     .account-modal-bg{position:fixed;inset:0;z-index:150;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);padding:20px}
@@ -697,6 +708,7 @@
     .deal-modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;z-index:160;padding:16px;overflow-y:auto}
     .deal-modal-bg.open{display:flex}
     .deal-modal{background:#fff;border-radius:var(--r-lg);width:min(520px,100%);max-height:92vh;overflow-y:auto;padding:26px;box-shadow:var(--shadow-lg);margin:auto}
+    #status-modal-inner{width:min(380px,100%)}
     .deal-form-group{margin-bottom:13px}
     .deal-form-group>label{display:block;font-size:.7rem;font-weight:700;color:var(--ink2);margin-bottom:5px;letter-spacing:.1em;text-transform:uppercase}
     .deal-inp{display:block;width:100%;padding:9px 12px;font-family:'DM Sans',sans-serif;font-size:.85rem;color:var(--ink);background:var(--cream);border:1.5px solid var(--warm);border-radius:6px;outline:none;-webkit-appearance:none;appearance:none}
@@ -1967,6 +1979,22 @@ service cloud.firestore {
   </div>
 </div>
 
+<!-- STATUS MODAL — dedicated screen for updating a booking's progress only.
+     Every tap saves immediately (no Save button) since this is meant to be used
+     one-handed, mid-job, from a phone. -->
+<div class="deal-modal-bg" id="status-modal">
+  <div class="deal-modal" id="status-modal-inner">
+    <div class="modal-head" style="margin-bottom:4px">
+      <h2 style="font-family:'Rajdhani',sans-serif;font-size:1.2rem;color:var(--ink)">🔧 Update Status</h2>
+      <button class="modal-close" id="status-modal-close-btn" type="button">×</button>
+    </div>
+    <div id="status-modal-who" style="font-size:.82rem;color:var(--muted);margin-bottom:16px;line-height:1.4"></div>
+    <div id="status-modal-stages" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px"></div>
+    <div id="status-modal-punch" style="margin-bottom:4px"></div>
+    <div id="status-modal-msg" style="font-size:.74rem;color:var(--muted);min-height:18px;text-align:center"></div>
+  </div>
+</div>
+
 <!-- DEALS MODAL -->
 <div class="deal-modal-bg" id="deals-modal">
   <div class="deal-modal">
@@ -3195,46 +3223,17 @@ function renderAdminBookings() {
     top.appendChild(label); top.appendChild(statusTag);
 
     var actions = document.createElement("div"); actions.className = "admin-list-item-actions";
-    var curIdx = statusIndex(b.status);
-    if (curIdx < STATUS_STAGES.length - 1) {
-      var nextBtn = document.createElement("button");
-      nextBtn.className = "admin-del"; nextBtn.style.color = "var(--teal)";
-      nextBtn.textContent = "Next: " + STATUS_STAGES[curIdx + 1] + " →";
-      nextBtn.title = "Advance this booking's status one stage";
-      nextBtn.onclick = function() {
-        var nextStatus = STATUS_STAGES[curIdx + 1];
-        nextBtn.disabled = true; nextBtn.textContent = "Saving…";
-        db.collection("bookings").doc(b.id).update({ status: nextStatus })
-          .catch(function(e) {
-            alert("Failed: " + (e.code || e.message));
-            nextBtn.disabled = false; nextBtn.textContent = "Next: " + STATUS_STAGES[curIdx + 1] + " →";
-          });
-      };
-      actions.appendChild(nextBtn);
-    }
+    var statusBtn = document.createElement("button");
+    statusBtn.className = "admin-del"; statusBtn.style.color = "var(--teal)"; statusBtn.style.fontWeight = "800";
+    statusBtn.textContent = "🔧 Status";
+    statusBtn.title = "Update this booking's progress";
+    statusBtn.onclick = function() { openStatusModal(b); };
+    actions.appendChild(statusBtn);
+
     var editBtn = document.createElement("button");
     editBtn.className = "admin-del"; editBtn.textContent = "Edit"; editBtn.style.color = "var(--teal)";
     editBtn.onclick = function() { openBookingEditor(b); };
     var bid = b.id;
-    if (b.punchApplied) {
-      var doneBtn = document.createElement("button");
-      doneBtn.className = "admin-del";
-      doneBtn.style.color = "var(--teal)";
-      if (b.punchConfirmed) { doneBtn.textContent = "✓ Done"; doneBtn.disabled = true; doneBtn.style.opacity = ".5"; }
-      else {
-        doneBtn.textContent = "Done";
-        doneBtn.title = "Locks in this customer's punch permanently";
-        doneBtn.onclick = function() {
-          doneBtn.disabled = true; doneBtn.textContent = "✓ Done"; doneBtn.style.opacity = ".5";
-          db.collection("bookings").doc(bid).update({ punchConfirmed: true, completedAt: new Date().toISOString() })
-            .catch(function(e) {
-              alert("Failed: " + (e.code || e.message));
-              doneBtn.disabled = false; doneBtn.textContent = "Done"; doneBtn.style.opacity = "1";
-            });
-        };
-      }
-      actions.appendChild(doneBtn);
-    }
     var btn = document.createElement("button"); btn.className = "admin-del"; btn.textContent = "Del";
     btn.onclick = function() {
       row.remove();
@@ -3446,28 +3445,14 @@ function renderCalDetail() {
       info.onclick = function() { openBookingEditor(b); };
       var actions = document.createElement("div");
       actions.className = "cal-bk-item-actions";
+      var statusBtn = document.createElement("button");
+      statusBtn.className = "admin-del"; statusBtn.style.color = "var(--teal)"; statusBtn.style.fontWeight = "800";
+      statusBtn.textContent = "🔧 Status";
+      statusBtn.title = "Update this booking's progress";
+      statusBtn.onclick = function() { openStatusModal(b); };
       var edit = document.createElement("button"); edit.className = "admin-del"; edit.textContent = "Edit"; edit.style.color = "var(--teal)";
       edit.onclick = function() { openBookingEditor(b); };
       var bid = b.id;
-      if (b.punchApplied) {
-        var doneBtn = document.createElement("button");
-        doneBtn.className = "admin-del";
-        doneBtn.style.color = "var(--teal)";
-        if (b.punchConfirmed) { doneBtn.textContent = "✓ Done"; doneBtn.disabled = true; doneBtn.style.opacity = ".5"; }
-        else {
-          doneBtn.textContent = "Done";
-          doneBtn.title = "Locks in this customer's punch permanently";
-          doneBtn.onclick = function() {
-            doneBtn.disabled = true; doneBtn.textContent = "✓ Done"; doneBtn.style.opacity = ".5";
-            db.collection("bookings").doc(bid).update({ punchConfirmed: true, completedAt: new Date().toISOString() })
-              .catch(function(e) {
-                alert("Failed: " + (e.code || e.message));
-                doneBtn.disabled = false; doneBtn.textContent = "Done"; doneBtn.style.opacity = "1";
-              });
-          };
-        }
-        actions.appendChild(doneBtn);
-      }
       var del = document.createElement("button"); del.className = "admin-del"; del.textContent = "Del";
       del.onclick = function() {
         revertPunchForBooking(b).then(function() {
@@ -3476,7 +3461,7 @@ function renderCalDetail() {
           alert("Delete failed: " + (e.code || e.message) + "\n\nUpdate your Firestore rules — see admin panel.");
         });
       };
-      actions.appendChild(edit); actions.appendChild(del);
+      actions.appendChild(statusBtn); actions.appendChild(edit); actions.appendChild(del);
       row.appendChild(info); row.appendChild(actions); list.appendChild(row);
     });
   }
@@ -3553,6 +3538,90 @@ function openBookingEditor(booking, prefillKey) {
 
 function closeBookingEditor() {
   document.getElementById("booking-editor-modal").classList.remove("open");
+}
+
+// ── STATUS MODAL — updates the booking PROCESS only (never name/date/address/etc).
+// Every button tap writes to Firestore immediately; there is intentionally no Save
+// button here, since this is meant to be usable one-handed mid-job from a phone.
+function openStatusModal(booking) {
+  renderStatusModal(booking);
+  document.getElementById("status-modal").classList.add("open");
+}
+function closeStatusModal() {
+  document.getElementById("status-modal").classList.remove("open");
+}
+function renderStatusModal(booking) {
+  var who = document.getElementById("status-modal-who");
+  var planTag = "";
+  if (booking.plan) {
+    var p = planByKey(booking.plan);
+    if (p) planTag = " · 🔁 " + p.label;
+  }
+  who.textContent = (booking.name || "Unknown") + " — " + (booking.dateLabel || booking.dateKey) + " · " + (booking.service || "?") + planTag;
+
+  var curIdx = statusIndex(booking.status);
+  var stagesEl = document.getElementById("status-modal-stages");
+  stagesEl.innerHTML = "";
+  STATUS_STAGES.forEach(function(stage, i) {
+    var isCurrent = i === curIdx, isPast = i < curIdx;
+    var b = document.createElement("button");
+    b.type = "button";
+    b.textContent = (isCurrent ? "● " : isPast ? "✓ " : "") + stage;
+    b.disabled = isCurrent;
+    b.style.cssText = "text-align:left;width:100%;padding:12px 14px;border-radius:9px;font-size:.85rem;font-family:'DM Sans',sans-serif;cursor:pointer;" +
+      "font-weight:" + (isCurrent ? "800" : "600") + ";" +
+      "border:1.5px solid " + (isCurrent ? "var(--teal)" : "var(--warm)") + ";" +
+      "background:" + (isCurrent ? "var(--teal)" : (isPast ? "rgba(0,0,0,.035)" : "var(--cream)")) + ";" +
+      "color:" + (isCurrent ? "#fff" : "var(--ink2)") + ";";
+    b.onclick = function() {
+      var msg = document.getElementById("status-modal-msg");
+      msg.textContent = "Saving…";
+      stagesEl.querySelectorAll("button").forEach(function(x) { x.disabled = true; });
+      db.collection("bookings").doc(booking.id).update({ status: stage })
+        .then(function() {
+          booking.status = stage; // reflect instantly, don't wait on the snapshot round-trip
+          renderStatusModal(booking);
+          msg.textContent = "✓ Saved";
+          setTimeout(function() { if (msg.textContent === "✓ Saved") msg.textContent = ""; }, 1400);
+        })
+        .catch(function(e) {
+          msg.textContent = "Failed: " + (e.code || e.message);
+          stagesEl.querySelectorAll("button").forEach(function(x, idx) { x.disabled = (idx === curIdx); });
+        });
+    };
+    stagesEl.appendChild(b);
+  });
+
+  var punchEl = document.getElementById("status-modal-punch");
+  punchEl.innerHTML = "";
+  if (booking.punchApplied) {
+    var doneBtn = document.createElement("button");
+    doneBtn.type = "button";
+    var locked = !!booking.punchConfirmed;
+    doneBtn.style.cssText = "width:100%;padding:12px 14px;border-radius:9px;font-size:.85rem;font-family:'DM Sans',sans-serif;font-weight:700;cursor:pointer;" +
+      "border:1.5px solid var(--teal);background:" + (locked ? "rgba(0,0,0,.035)" : "var(--cream)") + ";color:var(--teal);" + (locked ? "opacity:.6" : "");
+    doneBtn.textContent = locked ? "✓ Done — punch locked in" : "Mark Done — lock in this punch";
+    doneBtn.disabled = locked;
+    if (!locked) {
+      doneBtn.onclick = function() {
+        var msg = document.getElementById("status-modal-msg");
+        doneBtn.disabled = true; doneBtn.textContent = "Saving…";
+        msg.textContent = "Saving…";
+        db.collection("bookings").doc(booking.id).update({ punchConfirmed: true, completedAt: new Date().toISOString() })
+          .then(function() {
+            booking.punchConfirmed = true;
+            renderStatusModal(booking);
+            msg.textContent = "✓ Saved";
+            setTimeout(function() { if (msg.textContent === "✓ Saved") msg.textContent = ""; }, 1400);
+          })
+          .catch(function(e) {
+            msg.textContent = "Failed: " + (e.code || e.message);
+            doneBtn.disabled = false; doneBtn.textContent = "Mark Done — lock in this punch";
+          });
+      };
+    }
+    punchEl.appendChild(doneBtn);
+  }
 }
 
 function saveBookingEditor() {
@@ -5407,6 +5476,12 @@ document.addEventListener("DOMContentLoaded", function() {
   document.getElementById("be-save-btn").addEventListener("click", saveBookingEditor);
   document.getElementById("booking-editor-modal").addEventListener("click", function(e) {
     if (e.target === this) closeBookingEditor();
+  });
+
+  // Status modal (booking process only — no Save button, every tap auto-saves)
+  document.getElementById("status-modal-close-btn").addEventListener("click", closeStatusModal);
+  document.getElementById("status-modal").addEventListener("click", function(e) {
+    if (e.target === this) closeStatusModal();
   });
 
   // Calendar modal
