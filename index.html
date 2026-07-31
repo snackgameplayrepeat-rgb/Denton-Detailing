@@ -490,10 +490,14 @@
     .admin-btn{padding:7px 12px;border-radius:4px;border:1.5px solid var(--warm);background:var(--cream);color:var(--ink2);font-size:.75rem;font-weight:600;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif}
     .admin-btn:hover{background:var(--warm)}
     .admin-badge{font-size:.75rem;background:rgba(0,180,80,.1);color:#00703a;border:1px solid rgba(0,180,80,.2);padding:2px 8px;border-radius:3px;font-weight:700}
-    .admin-list{max-height:90px;overflow-y:auto;border:1.5px solid var(--warm);border-radius:6px;padding:6px 8px;background:var(--cream);margin-top:4px}
-    .admin-list-item{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--warm);font-size:.72rem;color:var(--ink2)}
+    .admin-list{max-height:280px;overflow-y:auto;border:1.5px solid var(--warm);border-radius:6px;padding:6px 8px;background:var(--cream);margin-top:4px}
+    .admin-list-item{display:flex;flex-direction:column;gap:6px;padding:8px 4px;border-bottom:1px solid var(--warm)}
     .admin-list-item:last-child{border-bottom:none}
-    .admin-del{background:none;border:none;color:var(--danger);font-size:.72rem;cursor:pointer;font-weight:600}
+    .admin-list-item-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+    .admin-list-item-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.74rem;color:var(--ink2);cursor:pointer}
+    .admin-list-item-status{flex-shrink:0;font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(0,0,0,.06);color:var(--ink2);white-space:nowrap}
+    .admin-list-item-actions{display:flex;flex-wrap:wrap;gap:6px 10px}
+    .admin-del{background:none;border:none;color:var(--danger);font-size:.72rem;cursor:pointer;font-weight:600;white-space:nowrap;padding:2px 0}
 
     /* ── Admin panel: collapsible sections ── */
     .admin-accordion{border:1px solid rgba(0,0,0,.08);border-radius:10px;margin-bottom:8px;background:rgba(0,0,0,.015)}
@@ -579,8 +583,9 @@
     .cal-detail h4{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--ink);margin-bottom:8px;letter-spacing:.04em}
     .cal-detail p{margin-bottom:6px}
     .cal-detail-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
-    .cal-bk-list{margin-top:10px;display:flex;flex-direction:column;gap:6px;max-height:130px;overflow-y:auto}
-    .cal-bk-item{display:flex;justify-content:space-between;align-items:center;padding:7px 10px;background:#fff;border-radius:6px;border:1px solid var(--warm);font-size:.75rem;color:var(--ink2)}
+    .cal-bk-list{margin-top:10px;display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto}
+    .cal-bk-item{display:flex;flex-direction:column;gap:6px;padding:8px 10px;background:#fff;border-radius:6px;border:1px solid var(--warm);font-size:.75rem;color:var(--ink2)}
+    .cal-bk-item-actions{display:flex;flex-wrap:wrap;gap:6px 10px}
 
     /* ── iPHONE / MOBILE POLISH ── */
     @media(max-width:599px){
@@ -3135,20 +3140,23 @@ function renderAdminBookings() {
   var sorted = bookings.slice().sort(function(a, b) { return (a.dateKey || "").localeCompare(b.dateKey || ""); });
   sorted.forEach(function(b) {
     var row = document.createElement("div"); row.className = "admin-list-item";
-    var label = document.createElement("div");
+
+    var top = document.createElement("div"); top.className = "admin-list-item-top";
+    var label = document.createElement("div"); label.className = "admin-list-item-label";
     var planTag = "";
     if (b.plan) {
       var bPlan = planByKey(b.plan);
       if (bPlan) planTag = " · 🔁 " + bPlan.label + (b.isRecurringOccurrence ? " (auto)" : "");
     }
     label.textContent = (b.dateLabel || b.dateKey) + " · " + (b.name || "?") + planTag +
-      (b.punchApplied ? " · 🎫 " + (b.isFreeReward ? "FREE" : ((b.punchPrevValue || 0) + 1) + "/10") + (b.punchConfirmed ? " ✓" : "") : "") +
-      " · 🔧 " + (b.status || STATUS_STAGES[0]);
-    label.style.cssText = "flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer";
+      (b.punchApplied ? " · 🎫 " + (b.isFreeReward ? "FREE" : ((b.punchPrevValue || 0) + 1) + "/10") + (b.punchConfirmed ? " ✓" : "") : "");
     label.title = "Click to edit";
     label.onclick = function() { openBookingEditor(b); };
-    var actions = document.createElement("div");
-    actions.style.cssText = "display:flex;gap:8px;flex-shrink:0";
+    var statusTag = document.createElement("div"); statusTag.className = "admin-list-item-status";
+    statusTag.textContent = "🔧 " + (b.status || STATUS_STAGES[0]);
+    top.appendChild(label); top.appendChild(statusTag);
+
+    var actions = document.createElement("div"); actions.className = "admin-list-item-actions";
     var curIdx = statusIndex(b.status);
     if (curIdx < STATUS_STAGES.length - 1) {
       var nextBtn = document.createElement("button");
@@ -3200,7 +3208,7 @@ function renderAdminBookings() {
       });
     };
     actions.appendChild(editBtn); actions.appendChild(btn);
-    row.appendChild(label); row.appendChild(actions); c.appendChild(row);
+    row.appendChild(top); row.appendChild(actions); c.appendChild(row);
   });
 }
 
@@ -3393,12 +3401,13 @@ function renderCalDetail() {
         if (calPlan) calPlanTag = " · 🔁 " + calPlan.label + (b.isRecurringOccurrence ? " (auto)" : "");
       }
       info.textContent = (b.name || "?") + " · " + (b.service || "") + calPlanTag +
-        (b.punchApplied ? " · 🎫 " + (b.isFreeReward ? "FREE" : ((b.punchPrevValue || 0) + 1) + "/10") + (b.punchConfirmed ? " ✓" : "") : "");
-      info.style.cssText = "flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer";
+        (b.punchApplied ? " · 🎫 " + (b.isFreeReward ? "FREE" : ((b.punchPrevValue || 0) + 1) + "/10") + (b.punchConfirmed ? " ✓" : "") : "") +
+        " · 🔧 " + (b.status || STATUS_STAGES[0]);
+      info.style.cssText = "overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer";
       info.title = "Click to edit";
       info.onclick = function() { openBookingEditor(b); };
       var actions = document.createElement("div");
-      actions.style.cssText = "display:flex;gap:6px;flex-shrink:0";
+      actions.className = "cal-bk-item-actions";
       var edit = document.createElement("button"); edit.className = "admin-del"; edit.textContent = "Edit"; edit.style.color = "var(--teal)";
       edit.onclick = function() { openBookingEditor(b); };
       var bid = b.id;
