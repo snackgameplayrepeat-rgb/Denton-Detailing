@@ -1150,7 +1150,7 @@
   <div class="reveal">
     <div class="section-label" data-edit-id="pricing.label">What's included</div>
     <h2 class="section-title" data-edit-id="pricing.title">Simple, honest pricing</h2>
-    <p class="section-body" data-edit-id="pricing.body">No upsells, no surprises. Shampooing is always included on interior and full details.</p>
+    <p class="section-body" data-edit-id="pricing.body">Shampooing is always included on interior and full details. Prices below are starting prices — your exact quote depends on your vehicle's size and condition.</p>
   </div>
   <div class="pricing-grid stagger-children">
     <div class="pricing-card" id="pricing-card-interior">
@@ -1239,7 +1239,7 @@
   <div class="faq-list reveal">
     <details class="faq-item">
       <summary><span data-edit-id="faq.q1">What's included in each service?</span><span class="faq-plus"></span></summary>
-      <p class="faq-a" data-edit-id="faq.a1">Every appointment follows the tier you choose above — Interior, Exterior, or Full Detail — and exactly what's covered is listed on each pricing card. No upsells or add-on surprises once we arrive; if you're ever unsure what's included, just ask before we get started.</p>
+      <p class="faq-a" data-edit-id="faq.a1">Every appointment follows the tier you choose above — Interior, Exterior, or Full Detail — and exactly what's covered is listed on each pricing card. Listed prices are starting prices; your exact quote depends on your vehicle's size and condition, and we'll always confirm the final price with you before we start.</p>
     </details>
     <details class="faq-item">
       <summary><span data-edit-id="faq.q2">What do you need from me at my location?</span><span class="faq-plus"></span></summary>
@@ -1322,6 +1322,11 @@
           <label for="notes">Notes (optional)</label>
           <input type="text" id="notes" placeholder="Pets, stains, special requests…"/>
         </div>
+        <div class="form-group">
+          <label for="referral-code">Referral code (optional)</label>
+          <input type="text" id="referral-code" placeholder="e.g. MICAH4821" autocomplete="off" style="text-transform:uppercase"/>
+          <div class="field-hint">Got a code from a friend? Enter it here — they'll get rewarded once your detail is done.</div>
+        </div>
         <button type="submit" class="btn-submit" id="booking-submit-btn">Book Now — Opens Your Messages</button>
         <div class="status-msg" id="booking-status"></div>
       </form>
@@ -1368,6 +1373,19 @@
     <div class="qb-appt-label">Your appointment</div>
     <div class="track-summary" id="qb-appt-summary"></div>
     <div class="track-stepper" id="qb-appt-stepper"></div>
+  </div>
+
+  <!-- Refer a friend — one-time-per-friend sharable code. Only ever pays out to
+       THIS customer (the sender), and only after their friend's first detail is
+       marked done by the admin. Populated in showHomeWelcome(). -->
+  <div class="qb-card reveal" id="qb-referral-card">
+    <div class="qb-card-title">🎁 Refer a Friend</div>
+    <p class="sub" style="margin-bottom:14px">Share your code with a friend who's never booked with us before. Once their first detail is done, you get <strong id="qb-referral-reward-amount">$20</strong> off your next one.</p>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span id="qb-referral-code" style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.08em;color:var(--gold2)">—</span>
+      <button type="button" id="qb-referral-copy-btn" class="admin-btn" style="padding:8px 16px">Copy to share</button>
+    </div>
+    <div id="qb-referral-credit-status" style="font-size:.82rem;color:var(--muted);margin-top:12px"></div>
   </div>
 
   <div class="qb-card reveal">
@@ -1728,8 +1746,8 @@
       <div class="admin-row" style="align-items:center;gap:8px;margin-bottom:10px">
         <label style="font-size:.72rem;color:var(--muted);flex-shrink:0">Display prices as</label>
         <select id="admin-price-format" class="admin-sel" style="flex:1">
-          <option value="range">Range ($X–$Y)</option>
-          <option value="flat">Flat ($X only)</option>
+          <option value="range">Range (From $X–$Y)</option>
+          <option value="flat">Starting price (From $X)</option>
         </select>
       </div>
       <div id="admin-pricing-rows"></div>
@@ -1737,6 +1755,24 @@
         <button type="button" class="admin-btn" id="admin-prices-save" style="background:linear-gradient(135deg,var(--gold),var(--gold2));color:#0b0a08;border-color:var(--gold);font-weight:700;width:100%">💾 Save Prices</button>
       </div>
       <div id="admin-prices-status" style="font-size:.7rem;color:var(--muted);margin-bottom:2px;min-height:14px"></div>
+    </div>
+  </details>
+
+  <!-- ═══════════ REFERRAL PROGRAM ═══════════ -->
+  <details class="admin-accordion" id="admin-acc-referral">
+    <summary>🎁 Referral Program</summary>
+    <div class="admin-accordion-body">
+      <div style="font-size:.68rem;color:var(--muted);margin-bottom:10px;line-height:1.5">
+        Every returning customer gets a short shareable code (Welcome Back page). A new customer can optionally enter it when booking their first detail — the new customer gets nothing, and it only ever counts for a genuine first-time booking. Once you mark that first job "Done" in Status, the referring customer is automatically credited. They can spend that credit on their very next booking.
+      </div>
+      <div class="admin-row" style="align-items:center;gap:8px">
+        <label style="font-size:.72rem;color:var(--muted);flex-shrink:0">Reward per referral ($)</label>
+        <input type="number" id="admin-referral-reward" class="admin-sel" min="0" step="1" style="flex:1"/>
+      </div>
+      <div class="admin-row">
+        <button type="button" class="admin-btn" id="admin-referral-save" style="background:linear-gradient(135deg,var(--gold),var(--gold2));color:#0b0a08;border-color:var(--gold);font-weight:700;width:100%">💾 Save Reward Amount</button>
+      </div>
+      <div id="admin-referral-status" style="font-size:.7rem;color:var(--muted);margin-bottom:2px;min-height:14px"></div>
     </div>
   </details>
 
@@ -1920,6 +1956,16 @@ service cloud.firestore {
     // "get", not a list), which is what powers quick-book. Only admin can list every
     // customer or delete a profile.
     match /customers/{phone} {
+      allow get: if true;
+      allow create, update: if true;
+      allow list, delete: if request.auth != null;
+    }
+    // Referral codes, keyed by the code itself: anyone can fetch ONE code they
+    // already have (a single "get", not a list) to find out whose code it is —
+    // that's what lets a brand-new customer redeem a friend's code without ever
+    // being able to browse/list every customer's code. Only the site itself
+    // creates these (when a customer's Welcome Back page first needs one).
+    match /referralCodes/{code} {
       allow get: if true;
       allow create, update: if true;
       allow list, delete: if request.auth != null;
@@ -2198,7 +2244,7 @@ var deals        = [];
 
 // settings/general → { weekdaySlots, weekendSlots }  — admin-controlled averages applied
 // to every weekday/weekend day on the calendar & booking page (per-date overrides still win)
-var appSettings = { weekdaySlots: 2, weekendSlots: 1, priceFormat: "range" };
+var appSettings = { weekdaySlots: 2, weekendSlots: 1, priceFormat: "range", referralReward: 20 };
 
 // bookingSlots — [{ id, dateKey }] — a public-readable "twin" record per booking,
 // holding ONLY the date (no name/phone/address/notes). Created/updated/deleted in
@@ -2694,7 +2740,11 @@ function upsertCustomerProfile(phoneDigits, fields) {
 function computePunchInfo(phoneDigits) {
   return db.collection("customers").doc(phoneDigits).get()
     .then(function(doc) {
-      var prev = (doc.exists && typeof doc.data().punches === "number") ? doc.data().punches : 0;
+      var data = doc.exists ? doc.data() : {};
+      // The punch card is a ONE-TIME perk per customer — once they've redeemed
+      // their free Full Detail, the card is gone for good and never restarts.
+      if (data.loyaltyUsed) return null;
+      var prev = typeof data.punches === "number" ? data.punches : 0;
       var isFreeReward = prev >= 10;
       var next = isFreeReward ? 0 : prev + 1;
       return { prev: prev, next: next, isFreeReward: isFreeReward };
@@ -2715,8 +2765,56 @@ function revertPunchForBooking(booking) {
   return ref.get().then(function(doc) {
     if (!doc.exists) return;
     var prev = typeof booking.punchPrevValue === "number" ? booking.punchPrevValue : 0;
-    return ref.set({ punches: prev }, { merge: true });
+    var payload = { punches: prev };
+    // If this cancelled booking was the free-reward redemption itself, undo the
+    // one-time flag too, since the reward never actually happened.
+    if (booking.isFreeReward) payload.loyaltyUsed = firebase.firestore.FieldValue.delete();
+    return ref.set(payload, { merge: true });
   }).catch(function(err) { console.warn("Punch revert failed (non-critical):", err); });
+}
+
+// ── REFERRAL PROGRAM ────────────────────────────────────────────────────────
+// Only the referral SENDER (the existing customer who shares their code) is ever
+// rewarded, and only after the referral RECEIVER's first detail is actually done
+// — never the receiver, and never for anyone who isn't a genuine first-time
+// customer. Codes live in their own top-level collection, keyed by the code
+// itself, so a brand-new visitor can look one up with a single doc-id get()
+// (allowed by the public rules) without ever needing to query/list the
+// customers collection (which holds PII and isn't publicly queryable).
+
+// Lazily generates (and remembers) a customer's shareable code the first time
+// it's needed — first name + last 4 digits of their phone, so it's short and
+// easy to read aloud or text without looking anything up.
+function ensureReferralCode(phoneDigits, profile) {
+  if (profile && profile.referralCode) return Promise.resolve(profile.referralCode);
+  var namePart = ((profile && profile.name) || "").split(" ")[0].replace(/[^a-zA-Z]/g, "").toUpperCase().slice(0, 8) || "FRIEND";
+  var code = namePart + phoneDigits.slice(-4);
+  return db.collection("referralCodes").doc(code).set({ phone: phoneDigits, createdAt: new Date().toISOString() }, { merge: true })
+    .then(function() { return db.collection("customers").doc(phoneDigits).set({ referralCode: code }, { merge: true }); })
+    .then(function() { return code; })
+    .catch(function(err) { console.warn("Referral code creation failed (non-critical):", err); return null; });
+}
+
+// Look up who a referral code belongs to — public get-by-id, no query needed.
+function lookupReferralSender(code) {
+  var clean = (code || "").trim().toUpperCase();
+  if (!clean) return Promise.resolve(null);
+  return db.collection("referralCodes").doc(clean).get()
+    .then(function(doc) { return doc.exists ? doc.data().phone : null; })
+    .catch(function(err) { console.warn("Referral code lookup failed (non-critical):", err); return null; });
+}
+
+// Admin: reverse a booking's not-yet-confirmed referral credit (called right
+// before deleting a booking that was cancelled before the admin marked it
+// "Done" — mirrors revertPunchForBooking above).
+function revertReferralCreditForBooking(booking) {
+  if (!booking || !booking.referralCreditApplied || booking.referralCreditConfirmed) return Promise.resolve();
+  var digits = normalizePhone(booking.phone);
+  if (!isValidUSPhone(digits)) return Promise.resolve();
+  var ref = db.collection("customers").doc(digits);
+  var prev = typeof booking.referralCreditPrevValue === "number" ? booking.referralCreditPrevValue : 0;
+  return ref.set({ referralCredit: prev }, { merge: true })
+    .catch(function(err) { console.warn("Referral credit revert failed (non-critical):", err); });
 }
 
 // ── ANIMATED PUNCH CARD (customer-facing) ──────────────────────────────────
@@ -2842,20 +2940,28 @@ function setPriceFormat(fmt) {
   return db.collection("settings").doc("general").set({ priceFormat: fmt }, { merge: true });
 }
 
-// Format a service's price for display, honoring the admin's chosen priceFormat
+// Format a service's price for display, honoring the admin's chosen priceFormat.
+// Always shown as a starting/"from" price rather than a bare number, since a
+// single flat figure reads as a final price when it isn't always one.
 function formatPriceRange(min, max) {
-  if (appSettings.priceFormat === "flat") return "$" + min;
-  return "$" + min + "–$" + max;
+  if (appSettings.priceFormat === "flat") return "From $" + min;
+  return "From $" + min + "–$" + max;
 }
 // Same, but as HTML with the upper bound in its own <span> (for the styled price cards)
 function formatPriceRangeHtml(min, max) {
-  if (appSettings.priceFormat === "flat") return "$" + min;
-  return "$" + min + "<span>–$" + max + "</span>";
+  if (appSettings.priceFormat === "flat") return "From $" + min;
+  return "From $" + min + "<span>–$" + max + "</span>";
 }
 
 // Admin: set the physical price (min/max) for every service at once
 function setServicePrices(pricesObj) {
   return db.collection("settings").doc("prices").set(pricesObj, { merge: true });
+}
+
+// Admin: set the dollar reward a referring customer earns once their referral's
+// first detail is marked done
+function setReferralReward(amount) {
+  return db.collection("settings").doc("general").set({ referralReward: Math.max(0, amount) }, { merge: true });
 }
 
 // Admin: set discount % + enabled state for every recurring plan at once
@@ -2973,6 +3079,7 @@ function startListeners() {
         if (typeof d.weekdaySlots === "number") appSettings.weekdaySlots = d.weekdaySlots;
         if (typeof d.weekendSlots === "number") appSettings.weekendSlots = d.weekendSlots;
         if (typeof d.priceFormat === "string") appSettings.priceFormat = d.priceFormat;
+        if (typeof d.referralReward === "number") appSettings.referralReward = d.referralReward;
       }
       _stReady = true; checkReady();
       if (_appStarted) {
@@ -2983,6 +3090,8 @@ function startListeners() {
         if (we && document.activeElement !== we) we.value = appSettings.weekendSlots;
         var pf = document.getElementById("admin-price-format");
         if (pf && document.activeElement !== pf) pf.value = appSettings.priceFormat;
+        var rr = document.getElementById("admin-referral-reward");
+        if (rr && document.activeElement !== rr) rr.value = appSettings.referralReward;
       }
     },
     function(err) { console.error("settings/general snapshot:", err); _stReady = true; checkReady(); }
@@ -3178,7 +3287,9 @@ function renderAdminBookings() {
       if (bPlan) planTag = " · 🔁 " + bPlan.label + (b.isRecurringOccurrence ? " (auto)" : "");
     }
     label.textContent = (b.dateLabel || b.dateKey) + " · " + (b.name || "?") + planTag +
-      (b.punchApplied ? " · 🎫 " + (b.isFreeReward ? "FREE" : ((b.punchPrevValue || 0) + 1) + "/10") + (b.punchConfirmed ? " ✓" : "") : "");
+      (b.punchApplied ? " · 🎫 " + (b.isFreeReward ? "FREE" : ((b.punchPrevValue || 0) + 1) + "/10") + (b.punchConfirmed ? " ✓" : "") : "") +
+      (b.referralApplied ? " · 🎁 referral" + (b.referralConfirmed ? " ✓" : "") : "") +
+      (b.referralCreditApplied ? " · 🎁 $" + b.referralCreditApplied + " credit used" : "");
     label.title = "Click to edit";
     label.onclick = function() { openBookingEditor(b); };
     var statusTag = document.createElement("div"); statusTag.className = "admin-list-item-status";
@@ -3200,7 +3311,7 @@ function renderAdminBookings() {
     var btn = document.createElement("button"); btn.className = "admin-del"; btn.textContent = "Del";
     btn.onclick = function() {
       row.remove();
-      revertPunchForBooking(b).then(function() {
+      Promise.all([revertPunchForBooking(b), revertReferralCreditForBooking(b)]).then(function() {
         return deleteBookingRecord(bid);
       }).catch(function(e) {
         alert("Delete failed: " + (e.code || e.message) + "\n\nUpdate your Firestore rules first (see admin panel).");
@@ -3402,6 +3513,7 @@ function renderCalDetail() {
       }
       info.textContent = (b.name || "?") + " · " + (b.service || "") + calPlanTag +
         (b.punchApplied ? " · 🎫 " + (b.isFreeReward ? "FREE" : ((b.punchPrevValue || 0) + 1) + "/10") + (b.punchConfirmed ? " ✓" : "") : "") +
+        (b.referralApplied ? " · 🎁 referral" + (b.referralConfirmed ? " ✓" : "") : "") +
         " · 🔧 " + (b.status || STATUS_STAGES[0]);
       info.style.cssText = "overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer";
       info.title = "Click to edit";
@@ -3418,7 +3530,7 @@ function renderCalDetail() {
       var bid = b.id;
       var del = document.createElement("button"); del.className = "admin-del"; del.textContent = "Del";
       del.onclick = function() {
-        revertPunchForBooking(b).then(function() {
+        Promise.all([revertPunchForBooking(b), revertReferralCreditForBooking(b)]).then(function() {
           return deleteBookingRecord(bid);
         }).catch(function(e) {
           alert("Delete failed: " + (e.code || e.message) + "\n\nUpdate your Firestore rules — see admin panel.");
@@ -3600,6 +3712,47 @@ function renderStatusModal(booking) {
     }
     punchEl.appendChild(doneBtn);
   }
+
+  // ── REFERRAL: this booking used someone's referral code. The referring
+  // customer is only ever credited once THIS job (the referral receiver's
+  // first detail) is confirmed done — never before, and never the receiver.
+  if (booking.referralApplied) {
+    if (booking.referralConfirmed) {
+      var refDone = document.createElement("div");
+      refDone.style.cssText = "font-size:.78rem;color:var(--teal);font-weight:700;margin-top:8px";
+      refDone.textContent = "🎁 Referral reward credited — $" + (booking.referralRewardAmount != null ? booking.referralRewardAmount : appSettings.referralReward);
+      punchEl.appendChild(refDone);
+    } else {
+      var refBtn = document.createElement("button");
+      refBtn.type = "button";
+      var rewardAmt = appSettings.referralReward || 0;
+      refBtn.style.cssText = "width:100%;padding:12px 14px;border-radius:9px;font-size:.85rem;font-family:'DM Sans',sans-serif;font-weight:700;cursor:pointer;margin-top:8px;" +
+        "border:1.5px solid var(--teal);background:var(--cream);color:var(--teal);";
+      refBtn.textContent = "🎁 Mark Done — credit $" + rewardAmt + " referral reward";
+      refBtn.onclick = function() {
+        var msg = document.getElementById("status-modal-msg");
+        refBtn.disabled = true; refBtn.textContent = "Saving…";
+        msg.textContent = "Saving…";
+        db.collection("customers").doc(booking.referralSenderPhone).set(
+          { referralCredit: firebase.firestore.FieldValue.increment(rewardAmt) }, { merge: true }
+        ).then(function() {
+          return db.collection("bookings").doc(booking.id).update({
+            referralConfirmed: true, referralRewardAmount: rewardAmt, referralConfirmedAt: new Date().toISOString()
+          });
+        }).then(function() {
+          booking.referralConfirmed = true;
+          booking.referralRewardAmount = rewardAmt;
+          renderStatusModal(booking);
+          msg.textContent = "✓ Saved";
+          setTimeout(function() { if (msg.textContent === "✓ Saved") msg.textContent = ""; }, 1400);
+        }).catch(function(e) {
+          msg.textContent = "Failed: " + (e.code || e.message);
+          refBtn.disabled = false; refBtn.textContent = "🎁 Mark Done — credit $" + rewardAmt + " referral reward";
+        });
+      };
+      punchEl.appendChild(refBtn);
+    }
+  }
 }
 
 function saveBookingEditor() {
@@ -3673,6 +3826,17 @@ function openSms(b) {
   if (b.address) lines.push("Address: " + b.address);
   lines.push("Vehicle: " + b.car, "Service: " + b.service, "Date: " + b.dateLabel);
   if (b.notes)   lines.push("Notes: " + b.notes);
+
+  // Referral: a code was used to book this (first-time) customer — reward the
+  // referring customer once this job is actually done (Status → Mark Done).
+  if (b.referralApplied) {
+    lines.push("🎁 Referral code used: " + b.referralCodeUsed + " — reward the referring customer once this job is marked Done.");
+  }
+  // Referral credit: this customer already earned a reward from a friend they
+  // referred — apply it manually to this visit's price.
+  if (b.referralCreditApplied) {
+    lines.push("🎁 Referral credit to apply: $" + b.referralCreditApplied + " off this visit.");
+  }
 
   // If a deal was applied, look it up and include human-readable deal info + discounted price
   if (b.dealId) {
@@ -3807,9 +3971,28 @@ function showHomeWelcome(profile, phoneDigits) {
   document.getElementById("qb-customer-address").value = profile.address || "";
   document.getElementById("qb-notes").value = "";
 
-  var punches = typeof profile.punches === "number" ? profile.punches : 0;
-  document.getElementById("qb-punch-status").textContent =
-    "🎫 Full Detail loyalty card: " + punches + "/10 — " + (10 - punches) + " more for a free one!";
+  var punchStatusEl = document.getElementById("qb-punch-status");
+  if (profile.loyaltyUsed) {
+    punchStatusEl.textContent = "🎫 You've already redeemed your free Full Detail — thanks for being a loyal customer!";
+  } else {
+    var punches = typeof profile.punches === "number" ? profile.punches : 0;
+    punchStatusEl.textContent =
+      "🎫 Full Detail loyalty card: " + punches + "/10 — " + (10 - punches) + " more for a free one!";
+  }
+
+  // Refer a Friend — show (or lazily generate) this customer's shareable code,
+  // plus any credit they've already earned from friends who've since been detailed.
+  document.getElementById("qb-referral-reward-amount").textContent = "$" + (appSettings.referralReward || 20);
+  var referralCreditEl = document.getElementById("qb-referral-credit-status");
+  var credit = (typeof profile.referralCredit === "number") ? profile.referralCredit : 0;
+  referralCreditEl.textContent = credit > 0
+    ? "🎉 You have $" + credit + " in referral credit — it'll be applied automatically the next time you book below."
+    : "No referral credit yet — refer a friend above to start earning!";
+  var referralCodeEl = document.getElementById("qb-referral-code");
+  referralCodeEl.textContent = profile.referralCode || "…";
+  ensureReferralCode(phoneDigits, profile).then(function(code) {
+    if (code) referralCodeEl.textContent = code;
+  });
 
   clearStatus("qb-status");
   updateBookingDropdown();
@@ -3940,12 +4123,44 @@ function submitBookingCore(fields, statusId, btn) {
   // create — a public client is only allowed to create bookings, not update them
   // afterward.
   var isFullDetail = fields.service === FULL_DETAIL_KEY && !fields.plan;
-  (isFullDetail ? computePunchInfo(phoneDigits) : Promise.resolve(null)).then(function(punchInfo) {
+  var enteredReferralCode = (fields.referralCode || "").trim().toUpperCase();
+
+  Promise.all([
+    isFullDetail ? computePunchInfo(phoneDigits) : Promise.resolve(null),
+    getCustomerProfile(phoneDigits),
+    enteredReferralCode ? lookupReferralSender(enteredReferralCode) : Promise.resolve(null)
+  ]).then(function(results) {
+    var punchInfo            = results[0];
+    var existingProfile      = results[1];
+    var referralSenderPhone  = results[2];
+
     if (punchInfo) {
       booking.punchApplied   = true;
       booking.punchConfirmed = false;
       booking.punchPrevValue = punchInfo.prev;
       booking.isFreeReward   = punchInfo.isFreeReward;
+    }
+
+    // REFERRAL (received): only ever valid for a genuine first-time customer —
+    // no existing profile, or one that's never actually completed a booking —
+    // and never lets someone redeem their own code. The sender isn't rewarded
+    // here; that only happens once the admin confirms THIS job is done.
+    var isFirstTimeCustomer = !existingProfile || !existingProfile.bookingCount;
+    if (enteredReferralCode && referralSenderPhone && isFirstTimeCustomer && referralSenderPhone !== phoneDigits) {
+      booking.referralCodeUsed    = enteredReferralCode;
+      booking.referralSenderPhone = referralSenderPhone;
+      booking.referralApplied     = true;
+      booking.referralConfirmed   = false;
+    }
+
+    // REFERRAL CREDIT (redeemed): if this phone already earned credit from a
+    // friend they referred whose detail has since been confirmed done, apply
+    // the whole balance to this booking now and clear it.
+    var creditAvailable = (existingProfile && typeof existingProfile.referralCredit === "number") ? existingProfile.referralCredit : 0;
+    if (creditAvailable > 0) {
+      booking.referralCreditApplied   = creditAvailable;
+      booking.referralCreditPrevValue = creditAvailable;
+      booking.referralCreditConfirmed = false;
     }
 
     createBookingRecord(booking)
@@ -3958,6 +4173,12 @@ function submitBookingCore(fields, statusId, btn) {
           msg = punchInfo.isFreeReward
             ? "Booked! 🎉 Your loyalty card is full — this Full Detail is FREE! Opening your messages…"
             : "Booked! You're now at " + punchInfo.next + "/10 on your Full Detail loyalty card. Opening your messages…";
+        }
+        if (booking.referralApplied) {
+          msg += " Thanks for using a referral code — your friend gets rewarded once your detail is done!";
+        }
+        if (booking.referralCreditApplied) {
+          msg += " 🎁 Your $" + booking.referralCreditApplied + " referral credit is on this booking — just mention it when you send the text.";
         }
         showStatus(statusId, msg, "success");
         if (punchInfo) showPunchCardAnimation(punchInfo.prev, punchInfo.isFreeReward);
@@ -3986,8 +4207,16 @@ function submitBookingCore(fields, statusId, btn) {
           if (statusId === "qb-status") renderWelcomeAppointment({ lastBookingId: booking.id });
         }).catch(function(err) { console.warn("Customer profile save failed (non-critical):", err); });
         if (punchInfo) {
-          db.collection("customers").doc(phoneDigits).set({ punches: punchInfo.next }, { merge: true })
+          var punchPayload = { punches: punchInfo.next };
+          // One-time perk: once redeemed, this customer's loyalty card is gone
+          // for good — no new card automatically starts back up at 0.
+          if (punchInfo.isFreeReward) punchPayload.loyaltyUsed = true;
+          db.collection("customers").doc(phoneDigits).set(punchPayload, { merge: true })
             .catch(function(err) { console.warn("Punch save failed (non-critical):", err); });
+        }
+        if (booking.referralCreditApplied) {
+          db.collection("customers").doc(phoneDigits).set({ referralCredit: 0 }, { merge: true })
+            .catch(function(err) { console.warn("Referral credit reset failed (non-critical):", err); });
         }
       })
       .catch(function(e) {
@@ -4012,7 +4241,8 @@ function handleBooking(e) {
     service: document.getElementById("service-type").value,
     dateKey: document.getElementById("booking-date").value,
     plan:    document.getElementById("booking-plan").value,
-    notes:   document.getElementById("notes").value.trim()
+    notes:   document.getElementById("notes").value.trim(),
+    referralCode: document.getElementById("referral-code").value.trim()
   }, "booking-status", document.getElementById("booking-submit-btn"));
 }
 
@@ -5265,6 +5495,22 @@ document.addEventListener("DOMContentLoaded", function() {
     setPriceFormat(this.value).catch(function(e) { alert("Failed to save: " + (e.code || e.message)); });
   });
 
+  var referralCopyBtn = document.getElementById("qb-referral-copy-btn");
+  if (referralCopyBtn) {
+    referralCopyBtn.addEventListener("click", function() {
+      var code = document.getElementById("qb-referral-code").textContent;
+      if (!code || code === "—" || code === "…") return;
+      var shareText = "Use my code " + code + " for your first mobile detail with Denton Detailing — dentondetailing.com";
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(shareText).then(function() {
+          var orig = referralCopyBtn.textContent;
+          referralCopyBtn.textContent = "Copied!";
+          setTimeout(function() { referralCopyBtn.textContent = orig; }, 1500);
+        }).catch(function() { /* clipboard blocked — button just won't confirm, no harm done */ });
+      }
+    });
+  }
+
   document.getElementById("booking-form").addEventListener("submit", handleBooking);
   document.getElementById("qb-booking-form").addEventListener("submit", handleQuickBookBooking);
   document.getElementById("custom-plan-form").addEventListener("submit", handleCustomPlanRequest);
@@ -5359,6 +5605,28 @@ document.addEventListener("DOMContentLoaded", function() {
   document.getElementById("admin-weekday-slots").value = appSettings.weekdaySlots;
   document.getElementById("admin-weekend-slots").value = appSettings.weekendSlots;
   document.getElementById("admin-price-format").value = appSettings.priceFormat;
+  document.getElementById("admin-referral-reward").value = appSettings.referralReward;
+  document.getElementById("admin-referral-save").addEventListener("click", function() {
+    var statusEl = document.getElementById("admin-referral-status");
+    var amt = parseFloat(document.getElementById("admin-referral-reward").value);
+    if (isNaN(amt) || amt < 0) {
+      statusEl.style.color = "#b91c1c";
+      statusEl.textContent = "Enter a valid dollar amount.";
+      return;
+    }
+    statusEl.style.color = "var(--muted)";
+    statusEl.textContent = "Saving…";
+    setReferralReward(amt)
+      .then(function() {
+        statusEl.style.color = "#1e7a46";
+        statusEl.textContent = "✓ Saved — new referrals will reward $" + amt + ".";
+        setTimeout(function() { statusEl.textContent = ""; }, 3000);
+      })
+      .catch(function(e) {
+        statusEl.style.color = "#b91c1c";
+        statusEl.textContent = "Failed: " + (e.code || e.message);
+      });
+  });
   document.getElementById("admin-default-slots-save").addEventListener("click", function() {
     var statusEl = document.getElementById("admin-default-slots-status");
     var wd = parseInt(document.getElementById("admin-weekday-slots").value, 10);
