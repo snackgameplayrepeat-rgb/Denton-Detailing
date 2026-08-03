@@ -492,17 +492,7 @@
     @media(max-width:480px){.punch-card-pop{padding:24px 18px 18px}}
 
     /* ── IN-PAGE TEXT EDITING ── */
-    body.edit-mode-on [data-edit-id]{outline:1.5px dashed rgba(255,196,0,.55);outline-offset:3px;cursor:text;border-radius:4px;transition:background .15s,outline-color .15s}
-    body.edit-mode-on [data-edit-id]:hover{outline-color:#ffd23f;background:rgba(255,210,63,.08)}
-    body.edit-mode-on [data-edit-id]:focus{outline:2px solid #ffd23f;background:rgba(255,210,63,.12)}
-    body.edit-mode-on [data-edit-id].just-saved{outline-color:var(--success);background:rgba(0,200,92,.14)}
-    .edit-mode-banner{display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:#1c1c1c;color:#ffd23f;font-size:.76rem;font-weight:700;text-align:center;padding:10px 16px;letter-spacing:.02em;border-bottom:2px solid #ffd23f}
-    .edit-mode-banner.show{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap}
-    .edit-mode-banner button{background:#ffd23f;color:#1c1c1c;border:none;padding:6px 14px;border-radius:6px;font-size:.7rem;font-weight:700;cursor:pointer;white-space:nowrap}
-    .edit-mini-toolbar{display:none;position:fixed;z-index:301;background:#1c1c1c;border:1px solid #ffd23f;border-radius:8px;padding:5px;box-shadow:0 8px 24px rgba(0,0,0,.4)}
-    .edit-mini-toolbar.show{display:flex}
-    .edit-mini-toolbar button{background:none;border:none;color:#ffd23f;font-size:.66rem;font-weight:700;cursor:pointer;padding:6px 10px;border-radius:5px;white-space:nowrap}
-    .edit-mini-toolbar button:hover{background:rgba(255,210,63,.15)}
+    /* (in-page text editing removed) */
 
     /* ── BOOKING ── */
     .booking-section-bg{background:var(--bg2)}
@@ -1032,13 +1022,6 @@
   <div class="nav-backdrop" id="nav-backdrop"></div>
 </header>
 
-<div class="edit-mode-banner" id="edit-mode-banner">
-  <span>✏️ Text Editing Mode — click any dashed-outline text to edit it, click away to save</span>
-  <button type="button" id="edit-mode-banner-done-btn">Done Editing</button>
-</div>
-<div class="edit-mini-toolbar" id="edit-mini-toolbar">
-  <button type="button" id="edit-mini-reset-btn">↺ Reset to default</button>
-</div>
 
 <div id="page-home" class="page-view">
 <div id="home-marketing">
@@ -1836,21 +1819,6 @@
         <button type="button" class="admin-btn" id="admin-reviews-save" style="background:var(--teal);color:#fff;border-color:var(--teal)">Save</button>
       </div>
       <div id="admin-reviews-status" style="font-size:.7rem;color:var(--muted);margin-bottom:2px;min-height:14px"></div>
-    </div>
-  </details>
-
-  <!-- ═══════════ SITE CONTENT ═══════════ -->
-  <details class="admin-accordion" id="admin-acc-content">
-    <summary>✏️ Site Text Editing</summary>
-    <div class="admin-accordion-body">
-      <div style="font-size:.72rem;color:var(--muted);margin-bottom:8px;line-height:1.5">Turn this on, then click any dashed-outline text anywhere on the live site to edit it in place. Click away to save.</div>
-      <div class="admin-row">
-        <button type="button" class="admin-btn" id="admin-edit-mode-btn" style="flex:1;background:linear-gradient(135deg,#ffd23f,#ffb800);color:#1c1c1c;border-color:#ffb800;font-weight:700">✏️ Enable Text Editing</button>
-      </div>
-      <div class="admin-row">
-        <button type="button" class="admin-btn" id="admin-reset-all-text-btn" style="color:var(--danger);border-color:rgba(224,82,82,.3)">↺ Reset All Text to Defaults</button>
-      </div>
-      <div id="admin-edit-mode-status" style="font-size:.68rem;color:var(--muted);margin-bottom:2px;min-height:14px"></div>
     </div>
   </details>
 
@@ -2910,113 +2878,7 @@ function calcPlanPrice(svcInfo, planKey) {
 }
 
 // ── IN-PAGE TEXT EDITING ───────────────────────────────────────────────────────
-// Any element tagged data-edit-id="some.key" can be edited live on the site by
-// the admin. Overrides are stored as a flat map at content/site in Firestore
-// (public read, admin write) and applied on top of the page's hardcoded default
-// text for every visitor. Editing is plain-text only (no rich formatting) so a
-// paste or stray keystroke can never leave broken HTML behind.
-var contentOverrides = {};
-var EDIT_MODE_ON = false;
-var _editOriginalText = null;
-
-// Capture each element's hardcoded default text ONCE, before any override is
-// ever applied, so "Reset to default" always has something to go back to.
-function initEditableDefaults() {
-  document.querySelectorAll("[data-edit-id]").forEach(function(el) {
-    if (!el.hasAttribute("data-edit-default")) {
-      el.setAttribute("data-edit-default", el.textContent);
-    }
-  });
-}
-
-function applyContentOverrides() {
-  document.querySelectorAll("[data-edit-id]").forEach(function(el) {
-    if (document.activeElement === el) return; // never clobber what's being typed right now
-    var key = el.getAttribute("data-edit-id");
-    var val = Object.prototype.hasOwnProperty.call(contentOverrides, key)
-      ? contentOverrides[key]
-      : el.getAttribute("data-edit-default");
-    if (val != null && el.textContent !== val) el.textContent = val;
-  });
-}
-
-function saveContentText(key, text) {
-  var payload = {};
-  payload[key] = text;
-  return db.collection("content").doc("site").set(payload, { merge: true });
-}
-
-function resetContentText(key) {
-  var payload = {};
-  payload[key] = firebase.firestore.FieldValue.delete();
-  return db.collection("content").doc("site").set(payload, { merge: true });
-}
-
-function resetAllContentText() {
-  return db.collection("content").doc("site").delete();
-}
-
-function flashSaved(el) {
-  el.classList.add("just-saved");
-  setTimeout(function() { el.classList.remove("just-saved"); }, 700);
-}
-
-function positionMiniToolbar(el) {
-  var toolbar = document.getElementById("edit-mini-toolbar");
-  var r = el.getBoundingClientRect();
-  toolbar.style.left = Math.max(8, Math.min(r.left, window.innerWidth - 180)) + "px";
-  toolbar.style.top  = Math.max(8, r.top - 42) + "px";
-}
-
-function setEditMode(on) {
-  EDIT_MODE_ON = on;
-  document.body.classList.toggle("edit-mode-on", on);
-  document.querySelectorAll("[data-edit-id]").forEach(function(el) {
-    el.contentEditable = on ? "true" : "false";
-  });
-  document.getElementById("edit-mode-banner").classList.toggle("show", on);
-  var btn = document.getElementById("admin-edit-mode-btn");
-  if (btn) btn.textContent = on ? "✅ Done Editing Text" : "✏️ Enable Text Editing";
-  if (!on) document.getElementById("edit-mini-toolbar").classList.remove("show");
-}
-
-// Event delegation — works across every page-view without needing per-element listeners
-document.addEventListener("focusin", function(e) {
-  if (!EDIT_MODE_ON) return;
-  var el = e.target;
-  if (!el.hasAttribute || !el.hasAttribute("data-edit-id")) return;
-  _editOriginalText = el.textContent;
-  positionMiniToolbar(el);
-  var toolbar = document.getElementById("edit-mini-toolbar");
-  toolbar.classList.add("show");
-  toolbar.setAttribute("data-target-key", el.getAttribute("data-edit-id"));
-});
-
-document.addEventListener("focusout", function(e) {
-  if (!EDIT_MODE_ON) return;
-  var el = e.target;
-  if (!el.hasAttribute || !el.hasAttribute("data-edit-id")) return;
-  document.getElementById("edit-mini-toolbar").classList.remove("show");
-  var key = el.getAttribute("data-edit-id");
-  var newText = el.textContent.trim();
-  if (!newText) { el.textContent = _editOriginalText; return; } // never save blank
-  if (newText === (_editOriginalText || "").trim()) return; // nothing actually changed
-  saveContentText(key, newText)
-    .then(function() { flashSaved(el); })
-    .catch(function(err) {
-      console.warn("Content save failed:", err);
-      el.textContent = _editOriginalText;
-      alert("Couldn't save that text change — make sure you've published the Firestore rules shown in the admin panel.");
-    });
-});
-
-document.addEventListener("keydown", function(e) {
-  if (!EDIT_MODE_ON) return;
-  var el = e.target;
-  if (!el.hasAttribute || !el.hasAttribute("data-edit-id")) return;
-  if (e.key === "Enter") { e.preventDefault(); el.blur(); }
-  if (e.key === "Escape") { el.textContent = _editOriginalText; el.blur(); }
-});
+// (removed — site text now always shows the text written directly in this file)
 
 // ── FIRESTORE CONNECTION TESTER ───────────────────────────────────────────────
 // Runs three quick write tests and shows pass/fail in the admin panel.
@@ -3160,14 +3022,8 @@ function startListeners() {
     function(err) { console.error("settings/plans snapshot:", err); _plReady = true; checkReady(); }
   );
 
-  db.collection("content").doc("site").onSnapshot(
-    function(doc) {
-      contentOverrides = doc.exists ? doc.data() : {};
-      _ctReady = true; checkReady();
-      if (_appStarted) applyContentOverrides();
-    },
-    function(err) { console.error("content snapshot:", err); _ctReady = true; checkReady(); }
-  );
+  // (in-page text editing removed — content/site overrides are no longer read)
+  _ctReady = true; checkReady();
 
   db.collection("bookings").onSnapshot(
     function(snap) {
@@ -3233,7 +3089,6 @@ function renderAll() {
   renderPlanCards();
   renderPlanOptions();
   renderAdminPlans();
-  applyContentOverrides();
 }
 
 function renderDatePicker() {
@@ -5330,7 +5185,6 @@ document.addEventListener("DOMContentLoaded", function() {
   document.getElementById("year").textContent = new Date().getFullYear();
   initReveal();
   initStats();
-  initEditableDefaults();
   startListeners();
   startMetaListener();
   initRouter();
@@ -5406,41 +5260,6 @@ document.addEventListener("DOMContentLoaded", function() {
     if (calPanelCtl) calPanelCtl.reset();
   });
 
-  // In-page text editing
-  document.getElementById("admin-edit-mode-btn").addEventListener("click", function() {
-    setEditMode(!EDIT_MODE_ON);
-  });
-  document.getElementById("edit-mode-banner-done-btn").addEventListener("click", function() {
-    setEditMode(false);
-  });
-  document.getElementById("edit-mini-reset-btn").addEventListener("click", function() {
-    var toolbar = document.getElementById("edit-mini-toolbar");
-    var key = toolbar.getAttribute("data-target-key");
-    var el = document.querySelector('[data-edit-id="' + key + '"]');
-    if (!el) return;
-    var def = el.getAttribute("data-edit-default");
-    el.textContent = def;
-    resetContentText(key)
-      .then(function() { flashSaved(el); })
-      .catch(function(err) { console.warn("Reset failed:", err); });
-  });
-  document.getElementById("admin-reset-all-text-btn").addEventListener("click", function() {
-    var statusEl = document.getElementById("admin-edit-mode-status");
-    if (!confirm("Reset ALL edited text on the site back to the original defaults? This can't be undone.")) return;
-    resetAllContentText()
-      .then(function() {
-        document.querySelectorAll("[data-edit-id]").forEach(function(el) {
-          el.textContent = el.getAttribute("data-edit-default");
-        });
-        statusEl.style.color = "#1e7a46";
-        statusEl.textContent = "✓ All site text reset to defaults.";
-        setTimeout(function() { statusEl.textContent = ""; }, 3000);
-      })
-      .catch(function(err) {
-        statusEl.style.color = "#b91c1c";
-        statusEl.textContent = "Error: " + (err.code || err.message);
-      });
-  });
   document.getElementById("admin-add-cust-save").addEventListener("click", adminAddCustomer);
   document.getElementById("admin-price-format").addEventListener("change", function() {
     setPriceFormat(this.value).catch(function(e) { alert("Failed to save: " + (e.code || e.message)); });
