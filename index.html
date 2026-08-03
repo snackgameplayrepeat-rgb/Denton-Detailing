@@ -2266,9 +2266,24 @@ var STATUS_STAGES = [
   "Awaiting Customer Approval",
   "Finished"
 ];
-function statusIndex(status) {
-  var i = STATUS_STAGES.indexOf(status);
+function statusIndex(status, stages) {
+  var list = stages || STATUS_STAGES;
+  var i = list.indexOf(status);
   return i === -1 ? 0 : i;
+}
+// Returns the stage list that actually applies to a given service — an
+// Interior-only job never has an "Exterior" stage to pass through, and vice
+// versa, so both the admin's status controls and the customer-facing tracker
+// only ever show stages relevant to what was actually booked. Full Detail
+// (and anything unrecognized) keeps the complete list.
+function getServiceStages(serviceKey) {
+  if (serviceKey === "Interior detail") {
+    return STATUS_STAGES.filter(function(s) { return s !== "Exterior"; });
+  }
+  if (serviceKey === "Exterior detail") {
+    return STATUS_STAGES.filter(function(s) { return s !== "Interior"; });
+  }
+  return STATUS_STAGES.slice();
 }
 // Remembers the booking this browser just made, so returning to the site on the
 // same device shows live status immediately with nothing to type in. Purely a
@@ -2327,9 +2342,10 @@ function renderTrackResult(booking) {
     '<div class="track-summary-row"><span class="track-summary-label">Service</span><span class="track-summary-value">' + esc(booking.service || "—") + '</span></div>' +
     '<div class="track-summary-row"><span class="track-summary-label">Appointment</span><span class="track-summary-value">' + esc(booking.dateLabel || booking.dateKey || "—") + '</span></div>';
 
-  var cur = statusIndex(booking.status);
+  var stages = getServiceStages(booking.service);
+  var cur = statusIndex(booking.status, stages);
   var html = "";
-  STATUS_STAGES.forEach(function(stage, i) {
+  stages.forEach(function(stage, i) {
     var cls = "track-step" + (i < cur ? " is-done" : "") + (i === cur ? " is-current" : "");
     html += '<div class="' + cls + '"><div class="track-dot">' + (i < cur ? "✓" : (i + 1)) + '</div><div class="track-step-label">' + esc(stage) + '</div></div>';
   });
@@ -3571,6 +3587,27 @@ function renderCalendarIfOpen() {
 }
 
 // ── ADD / EDIT BOOKING (real bookings — used from Admin Panel and the Calendar) ──
+// Rebuilds the Status dropdown options to match whichever service is currently
+// selected in the editor (an Interior detail never passes through "Exterior",
+// and vice versa). Pass the booking to preselect its saved status on open;
+// pass null when just reacting to the admin changing the service mid-edit —
+// in that case it tries to keep the currently chosen status if it's still
+// valid for the new service, otherwise falls back to the first stage.
+function populateStatusOptions(booking) {
+  var svcSel = document.getElementById("be-service");
+  var statusSel = document.getElementById("be-status");
+  var stages = getServiceStages(svcSel.value);
+  var keep = booking ? (booking.status || stages[0]) : statusSel.value;
+  statusSel.innerHTML = "";
+  stages.forEach(function(stage) {
+    var opt = document.createElement("option");
+    opt.value = stage;
+    opt.textContent = stage;
+    statusSel.appendChild(opt);
+  });
+  statusSel.value = (stages.indexOf(keep) !== -1) ? keep : stages[0];
+}
+
 function openBookingEditor(booking, prefillKey) {
   document.getElementById("booking-editor-title").textContent = booking ? "📋 Edit Booking" : "📋 Add Booking";
   document.getElementById("be-id").value         = booking ? booking.id : "";
@@ -3590,6 +3627,7 @@ function openBookingEditor(booking, prefillKey) {
     svcSel.appendChild(opt);
   });
   svcSel.value = (booking && booking.service) || (SERVICE_INFO[0] ? SERVICE_INFO[0].key : "");
+  svcSel.onchange = function() { populateStatusOptions(null); };
 
   var dealSel = document.getElementById("be-deal");
   dealSel.innerHTML = '<option value="">None</option>';
@@ -3611,15 +3649,7 @@ function openBookingEditor(booking, prefillKey) {
   });
   planSel.value = (booking && booking.plan) || "";
 
-  var statusSel = document.getElementById("be-status");
-  statusSel.innerHTML = "";
-  STATUS_STAGES.forEach(function(stage) {
-    var opt = document.createElement("option");
-    opt.value = stage;
-    opt.textContent = stage;
-    statusSel.appendChild(opt);
-  });
-  statusSel.value = (booking && booking.status) || STATUS_STAGES[0];
+  populateStatusOptions(booking);
 
   document.getElementById("be-date").value = (booking && booking.dateKey) || prefillKey || "";
 
@@ -3651,10 +3681,11 @@ function renderStatusModal(booking) {
   }
   who.textContent = (booking.name || "Unknown") + " — " + (booking.dateLabel || booking.dateKey) + " · " + (booking.service || "?") + planTag;
 
-  var curIdx = statusIndex(booking.status);
+  var stages = getServiceStages(booking.service);
+  var curIdx = statusIndex(booking.status, stages);
   var stagesEl = document.getElementById("status-modal-stages");
   stagesEl.innerHTML = "";
-  STATUS_STAGES.forEach(function(stage, i) {
+  stages.forEach(function(stage, i) {
     var isCurrent = i === curIdx, isPast = i < curIdx;
     var b = document.createElement("button");
     b.type = "button";
@@ -3891,9 +3922,10 @@ function renderWelcomeAppointment(profile) {
       '<div class="track-summary-row"><span class="track-summary-label">Service</span><span class="track-summary-value">' + esc(booking.service || "—") + '</span></div>' +
       '<div class="track-summary-row"><span class="track-summary-label">Appointment</span><span class="track-summary-value">' + esc(booking.dateLabel || booking.dateKey || "—") + '</span></div>';
 
-    var cur = statusIndex(booking.status);
+    var stages = getServiceStages(booking.service);
+    var cur = statusIndex(booking.status, stages);
     var html = "";
-    STATUS_STAGES.forEach(function(stage, i) {
+    stages.forEach(function(stage, i) {
       var cls = "track-step" + (i < cur ? " is-done" : "") + (i === cur ? " is-current" : "");
       html += '<div class="' + cls + '"><div class="track-dot">' + (i < cur ? "✓" : (i + 1)) + '</div><div class="track-step-label">' + esc(stage) + '</div></div>';
     });
