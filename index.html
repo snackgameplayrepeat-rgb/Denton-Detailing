@@ -1381,7 +1381,7 @@
        actually done, this customer earns a redeemable coupon of their own. -->
   <div class="qb-card reveal" id="qb-referral-card">
     <div class="qb-card-title">🎁 Refer a Friend</div>
-    <p class="sub" style="margin-bottom:14px">Share your code with a friend who's never booked with us before. They get <strong id="qb-referral-reward-amount-1">$20</strong> off their first visit, and once their detail is done, you get a <strong id="qb-referral-reward-amount-2">$20</strong> coupon of your own.</p>
+    <p class="sub" style="margin-bottom:14px">Share this code with a friend who's never booked with us before — it's for <em>them</em> to enter when they book. They get <strong id="qb-referral-reward-amount-1">$20</strong> off their first visit, and once their detail is done, you get a <strong id="qb-referral-reward-amount-2">$20</strong> coupon of your own (pick it from the dropdown when you book below).</p>
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
       <span id="qb-referral-code" style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.08em;color:var(--gold2)">—</span>
       <button type="button" id="qb-referral-copy-btn" class="admin-btn" style="padding:8px 16px">Copy to share</button>
@@ -1389,14 +1389,6 @@
     <div id="qb-referral-error" style="display:none;font-size:.78rem;color:#b91c1c;margin-top:10px;line-height:1.5">
       Couldn't load your code — this usually means the Firestore rules haven't been updated yet. Go to Admin Panel → Connection &amp; Setup → "Copy rules", then paste and Publish in the Firebase Console.
     </div>
-  </div>
-
-  <!-- Your coupons — any earned-but-not-yet-used loyalty or referral coupons,
-       so it's obvious what's available and easy to copy straight into the
-       Coupon code field below. Populated in showHomeWelcome(). -->
-  <div class="qb-card reveal" id="qb-coupons-card" style="display:none">
-    <div class="qb-card-title">Your Coupons</div>
-    <div id="qb-coupons-list" style="display:flex;flex-direction:column;gap:10px;margin-top:6px"></div>
   </div>
 
   <div class="qb-card reveal">
@@ -1440,10 +1432,12 @@
         <label for="qb-notes">Notes (optional)</label>
         <input type="text" id="qb-notes" placeholder="Pets, stains, special requests…"/>
       </div>
-      <div class="form-group">
-        <label for="qb-coupon-code">Coupon code (optional)</label>
-        <input type="text" id="qb-coupon-code" placeholder="e.g. FREEDETAIL-4821AB" autocomplete="off" style="text-transform:uppercase"/>
-        <div class="field-hint">Have a free-detail or referral reward coupon? Enter the code here to use it on this visit.</div>
+      <div class="form-group" id="qb-coupon-group" style="display:none">
+        <label for="qb-coupon-code">Use a coupon (optional)</label>
+        <select id="qb-coupon-code">
+          <option value="">No coupon — full price</option>
+        </select>
+        <div class="field-hint">Pick from any free-detail or referral coupons you've earned.</div>
       </div>
       <button type="submit" class="btn-submit qb-submit" id="qb-submit-btn">Book Now — Opens Your Messages</button>
       <div class="status-msg" id="qb-status"></div>
@@ -4082,39 +4076,26 @@ function renderLoyaltyAndCoupons(profile, phoneDigits) {
     }
   });
 
-  // Your Coupons — any earned-but-unused loyalty/referral coupons, shown with a
-  // one-tap "Use this" button that drops the code straight into the Coupon
-  // code field below, so redeeming one doesn't require re-typing anything.
-  var couponsCard = document.getElementById("qb-coupons-card");
-  var couponsList = document.getElementById("qb-coupons-list");
-  couponsList.innerHTML = "";
-  var couponCodes = [];
-  if (profile.loyaltyCouponCode) couponCodes.push({ code: profile.loyaltyCouponCode, label: "🎉 FREE Full Detail" });
+  // Coupon dropdown — any earned-but-unused loyalty/referral coupons, offered
+  // as an actual selectable option rather than a code to copy/paste (which is
+  // easy to confuse with the *referral* share-code above — they're different
+  // things: the share code is for a friend to enter, this dropdown is for
+  // redeeming what you've personally earned).
+  var couponGroup = document.getElementById("qb-coupon-group");
+  var couponSelect = document.getElementById("qb-coupon-code");
+  var couponOptions = [];
+  if (profile.loyaltyCouponCode) couponOptions.push({ code: profile.loyaltyCouponCode, label: "🎉 FREE Full Detail" });
   (profile.referralCouponCodes || []).forEach(function(code) {
-    couponCodes.push({ code: code, label: "🎁 $" + rewardAmt + " off your next visit" });
+    couponOptions.push({ code: code, label: "🎁 $" + rewardAmt + " off this visit" });
   });
-  if (couponCodes.length) {
-    couponsCard.style.display = "";
-    couponCodes.forEach(function(c) {
-      var row = document.createElement("div");
-      row.style.cssText = "display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:var(--cream);border:1.5px solid var(--gold);border-radius:9px;padding:10px 12px";
-      var info = document.createElement("div");
-      info.innerHTML = "<div style='font-family:\"Bebas Neue\",sans-serif;font-size:1.1rem;letter-spacing:.05em;color:var(--gold2)'>" + c.code + "</div><div style='font-size:.78rem;color:var(--muted)'>" + c.label + "</div>";
-      var useBtn = document.createElement("button");
-      useBtn.type = "button";
-      useBtn.className = "admin-btn";
-      useBtn.style.padding = "7px 14px";
-      useBtn.textContent = "Use this";
-      useBtn.onclick = function() {
-        document.getElementById("qb-coupon-code").value = c.code;
-        document.getElementById("qb-coupon-code").scrollIntoView({ behavior: "smooth", block: "center" });
-      };
-      row.appendChild(info); row.appendChild(useBtn);
-      couponsList.appendChild(row);
-    });
-  } else {
-    couponsCard.style.display = "none";
-  }
+  couponSelect.innerHTML = '<option value="">No coupon — full price</option>';
+  couponOptions.forEach(function(c) {
+    var opt = document.createElement("option");
+    opt.value = c.code;
+    opt.textContent = c.label;
+    couponSelect.appendChild(opt);
+  });
+  couponGroup.style.display = couponOptions.length ? "" : "none";
 }
 
 function showHomeWelcome(profile, phoneDigits) {
@@ -5710,8 +5691,7 @@ function copyTextToClipboard(text, onDone) {
         setTimeout(function() { referralCopyBtn.textContent = orig; }, 1800);
         return;
       }
-      var shareText = "Use my code " + code + " for your first mobile detail with Denton Detailing — dentondetailing.com";
-      copyTextToClipboard(shareText, function(copied) {
+      copyTextToClipboard(code, function(copied) {
         referralCopyBtn.textContent = copied ? "Copied!" : "Copy it above ↑";
         setTimeout(function() { referralCopyBtn.textContent = orig; }, 1800);
       });
