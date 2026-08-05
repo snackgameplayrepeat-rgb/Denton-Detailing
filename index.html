@@ -1386,6 +1386,9 @@
       <span id="qb-referral-code" style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.08em;color:var(--gold2)">—</span>
       <button type="button" id="qb-referral-copy-btn" class="admin-btn" style="padding:8px 16px">Copy to share</button>
     </div>
+    <div id="qb-referral-error" style="display:none;font-size:.78rem;color:#b91c1c;margin-top:10px;line-height:1.5">
+      Couldn't load your code — this usually means the Firestore rules haven't been updated yet. Go to Admin Panel → Connection &amp; Setup → "Copy rules", then paste and Publish in the Firebase Console.
+    </div>
   </div>
 
   <!-- Your coupons — any earned-but-not-yet-used loyalty or referral coupons,
@@ -4065,9 +4068,18 @@ function renderLoyaltyAndCoupons(profile, phoneDigits) {
   document.getElementById("qb-referral-reward-amount-1").textContent = "$" + rewardAmt;
   document.getElementById("qb-referral-reward-amount-2").textContent = "$" + rewardAmt;
   var referralCodeEl = document.getElementById("qb-referral-code");
+  var referralErrEl = document.getElementById("qb-referral-error");
   referralCodeEl.textContent = profile.referralCode || "…";
+  if (referralErrEl) referralErrEl.style.display = "none";
   ensureReferralCode(phoneDigits, profile).then(function(code) {
-    if (code) referralCodeEl.textContent = code;
+    if (code) {
+      referralCodeEl.textContent = code;
+    } else if (referralErrEl && referralCodeEl.textContent === "…") {
+      // Generation failed (most likely: Firestore rules haven't been updated
+      // yet with the referralCodes collection — see Admin Panel → Connection &
+      // Setup → Copy rules, then paste + Publish in the Firebase Console).
+      referralErrEl.style.display = "";
+    }
   });
 
   // Your Coupons — any earned-but-unused loyalty/referral coupons, shown with a
@@ -5690,9 +5702,15 @@ function copyTextToClipboard(text, onDone) {
   if (referralCopyBtn) {
     referralCopyBtn.addEventListener("click", function() {
       var code = document.getElementById("qb-referral-code").textContent;
-      if (!code || code === "—" || code === "…") return;
-      var shareText = "Use my code " + code + " for your first mobile detail with Denton Detailing — dentondetailing.com";
       var orig = referralCopyBtn.textContent;
+      if (!code || code === "—" || code === "…") {
+        referralCopyBtn.textContent = "Not ready yet…";
+        var errEl = document.getElementById("qb-referral-error");
+        if (errEl) errEl.style.display = "";
+        setTimeout(function() { referralCopyBtn.textContent = orig; }, 1800);
+        return;
+      }
+      var shareText = "Use my code " + code + " for your first mobile detail with Denton Detailing — dentondetailing.com";
       copyTextToClipboard(shareText, function(copied) {
         referralCopyBtn.textContent = copied ? "Copied!" : "Copy it above ↑";
         setTimeout(function() { referralCopyBtn.textContent = orig; }, 1800);
