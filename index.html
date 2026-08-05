@@ -1049,10 +1049,10 @@
 
 <!-- TRUST BAR -->
 <div class="trust-bar">
-  <div class="trust-item" data-edit-id="trust.item1">🚗 We Come To You</div>
-  <div class="trust-item" data-edit-id="trust.item2">📍 Based in Tipp City, OH</div>
-  <div class="trust-item" data-edit-id="trust.item3">🗺️ 20–25 Min Service Area</div>
-  <div class="trust-item" data-edit-id="trust.item4">🧴 Shampooing Included</div>
+  <div class="trust-item" data-edit-id="trust.item1">We Come To You</div>
+  <div class="trust-item" data-edit-id="trust.item2">Based in Tipp City, OH</div>
+  <div class="trust-item" data-edit-id="trust.item3">20–25 Min Service Area</div>
+  <div class="trust-item" data-edit-id="trust.item4">Shampooing Included</div>
 </div>
 
 <!-- STATS BAR -->
@@ -1325,7 +1325,7 @@
         <div class="form-group">
           <label for="referral-code">Referral code (optional)</label>
           <input type="text" id="referral-code" placeholder="e.g. MICAH4821" autocomplete="off" style="text-transform:uppercase"/>
-          <div class="field-hint">Got a code from a friend? Enter it here — they'll get rewarded once your detail is done.</div>
+          <div class="field-hint">Got a code from a friend? Enter it here to get money off this visit — and they'll get rewarded too once your detail is done.</div>
         </div>
         <button type="submit" class="btn-submit" id="booking-submit-btn">Book Now — Opens Your Messages</button>
         <div class="status-msg" id="booking-status"></div>
@@ -1375,17 +1375,25 @@
     <div class="track-stepper" id="qb-appt-stepper"></div>
   </div>
 
-  <!-- Refer a friend — one-time-per-friend sharable code. Only ever pays out to
-       THIS customer (the sender), and only after their friend's first detail is
-       marked done by the admin. Populated in showHomeWelcome(). -->
+  <!-- Refer a friend — one-time-per-friend sharable code. Populated in
+       showHomeWelcome(). Both people benefit: a friend who uses this code gets
+       $X off their own first visit right away, and once their detail is
+       actually done, this customer earns a redeemable coupon of their own. -->
   <div class="qb-card reveal" id="qb-referral-card">
     <div class="qb-card-title">🎁 Refer a Friend</div>
-    <p class="sub" style="margin-bottom:14px">Share your code with a friend who's never booked with us before. Once their first detail is done, you get <strong id="qb-referral-reward-amount">$20</strong> off your next one.</p>
+    <p class="sub" style="margin-bottom:14px">Share your code with a friend who's never booked with us before. They get <strong id="qb-referral-reward-amount-1">$20</strong> off their first visit, and once their detail is done, you get a <strong id="qb-referral-reward-amount-2">$20</strong> coupon of your own.</p>
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
       <span id="qb-referral-code" style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.08em;color:var(--gold2)">—</span>
       <button type="button" id="qb-referral-copy-btn" class="admin-btn" style="padding:8px 16px">Copy to share</button>
     </div>
-    <div id="qb-referral-credit-status" style="font-size:.82rem;color:var(--muted);margin-top:12px"></div>
+  </div>
+
+  <!-- Your coupons — any earned-but-not-yet-used loyalty or referral coupons,
+       so it's obvious what's available and easy to copy straight into the
+       Coupon code field below. Populated in showHomeWelcome(). -->
+  <div class="qb-card reveal" id="qb-coupons-card" style="display:none">
+    <div class="qb-card-title">Your Coupons</div>
+    <div id="qb-coupons-list" style="display:flex;flex-direction:column;gap:10px;margin-top:6px"></div>
   </div>
 
   <div class="qb-card reveal">
@@ -1428,6 +1436,11 @@
       <div class="form-group">
         <label for="qb-notes">Notes (optional)</label>
         <input type="text" id="qb-notes" placeholder="Pets, stains, special requests…"/>
+      </div>
+      <div class="form-group">
+        <label for="qb-coupon-code">Coupon code (optional)</label>
+        <input type="text" id="qb-coupon-code" placeholder="e.g. FREEDETAIL-4821AB" autocomplete="off" style="text-transform:uppercase"/>
+        <div class="field-hint">Have a free-detail or referral reward coupon? Enter the code here to use it on this visit.</div>
       </div>
       <button type="submit" class="btn-submit qb-submit" id="qb-submit-btn">Book Now — Opens Your Messages</button>
       <div class="status-msg" id="qb-status"></div>
@@ -1528,7 +1541,7 @@
     </div>
   </div>
   <div class="about-card reveal" style="margin-top:20px">
-    <h3 data-edit-id="about.card3.title">📍 Where we work</h3>
+    <h3 data-edit-id="about.card3.title">Where we work</h3>
     <p data-edit-id="about.card3.p1">We're based in Tipp City, Ohio, and we're fully mobile — we bring everything we need right to your driveway, office, or wherever your car is parked. No shop to drive to.</p>
     <p style="margin-top:12px" data-edit-id="about.card3.p2">We typically travel up to about 20–25 minutes outside Tipp City, which covers places like Troy, Huber Heights, Piqua, West Milton, and Vandalia. Not sure if you're in range? Just text your address and we'll let you know.</p>
   </div>
@@ -1763,7 +1776,7 @@
     <summary>🎁 Referral Program</summary>
     <div class="admin-accordion-body">
       <div style="font-size:.68rem;color:var(--muted);margin-bottom:10px;line-height:1.5">
-        Every returning customer gets a short shareable code (Welcome Back page). A new customer can optionally enter it when booking their first detail — the new customer gets nothing, and it only ever counts for a genuine first-time booking. Once you mark that first job "Done" in Status, the referring customer is automatically credited. They can spend that credit on their very next booking.
+        Every returning customer gets a short shareable code (Welcome Back page). A new customer can optionally enter it when booking their first detail — they get this reward amount off their own visit right away, and it only ever counts for a genuine first-time booking. Once you mark that job "Done" in Status, the referring customer earns a coupon of their own, which they redeem later using the "Coupon code" field on their Welcome Back page.
       </div>
       <div class="admin-row" style="align-items:center;gap:8px">
         <label style="font-size:.72rem;color:var(--muted);flex-shrink:0">Reward per referral ($)</label>
@@ -1966,6 +1979,15 @@ service cloud.firestore {
     // being able to browse/list every customer's code. Only the site itself
     // creates these (when a customer's Welcome Back page first needs one).
     match /referralCodes/{code} {
+      allow get: if true;
+      allow create, update: if true;
+      allow list, delete: if request.auth != null;
+    }
+    // Coupons (loyalty free-detail rewards and referral rewards), keyed by the
+    // coupon code itself: same "get one you already have, never list them all"
+    // pattern as referralCodes above — lets a customer redeem their own code
+    // without ever being able to browse/guess anyone else's.
+    match /coupons/{code} {
       allow get: if true;
       allow create, update: if true;
       allow list, delete: if request.auth != null;
@@ -2732,22 +2754,25 @@ function upsertCustomerProfile(phoneDigits, fields) {
 }
 
 // ── LOYALTY PUNCH CARD (Full Detail only) ─────────────────────────────────────
-// 10 punches, then the 11th Full Detail is free. Punches live on the customer's
-// profile doc (customers/{phone}.punches). Reads customers/{phone} (public get,
-// already allowed) BEFORE the booking is saved, so the resulting punch fields can
-// be written as part of the initial booking `create` — no separate `update` call
+// 10 punches, then completing the card issues a one-time FREE-DETAIL COUPON —
+// a real code the customer redeems themselves (in the Coupon code field) on
+// whichever future booking they want, rather than it silently auto-applying to
+// whatever they happen to book next. Punches live on the customer's profile doc
+// (customers/{phone}.punches). Reads customers/{phone} (public get, already
+// allowed) BEFORE the booking is saved, so the resulting punch fields can be
+// written as part of the initial booking `create` — no separate `update` call
 // is needed from the public client, which the Firestore rules don't allow anyway.
 function computePunchInfo(phoneDigits) {
   return db.collection("customers").doc(phoneDigits).get()
     .then(function(doc) {
       var data = doc.exists ? doc.data() : {};
-      // The punch card is a ONE-TIME perk per customer — once they've redeemed
-      // their free Full Detail, the card is gone for good and never restarts.
+      // The punch card is a ONE-TIME perk per customer — once they've earned
+      // their free-detail coupon, the card is gone for good and never restarts.
       if (data.loyaltyUsed) return null;
       var prev = typeof data.punches === "number" ? data.punches : 0;
-      var isFreeReward = prev >= 10;
-      var next = isFreeReward ? 0 : prev + 1;
-      return { prev: prev, next: next, isFreeReward: isFreeReward };
+      var next = prev + 1;
+      var cardComplete = next >= 10;
+      return { prev: prev, next: cardComplete ? 10 : next, cardComplete: cardComplete };
     })
     .catch(function(err) {
       console.warn("Punch lookup failed (non-critical, booking proceeds without it):", err);
@@ -2766,21 +2791,74 @@ function revertPunchForBooking(booking) {
     if (!doc.exists) return;
     var prev = typeof booking.punchPrevValue === "number" ? booking.punchPrevValue : 0;
     var payload = { punches: prev };
-    // If this cancelled booking was the free-reward redemption itself, undo the
-    // one-time flag too, since the reward never actually happened.
-    if (booking.isFreeReward) payload.loyaltyUsed = firebase.firestore.FieldValue.delete();
+    // If this cancelled booking was the one that completed the card, undo the
+    // one-time flag and invalidate the coupon it issued — the reward never
+    // actually happened.
+    if (booking.cardCompleted) {
+      payload.loyaltyUsed = firebase.firestore.FieldValue.delete();
+      payload.loyaltyCouponCode = firebase.firestore.FieldValue.delete();
+      if (booking.loyaltyCouponCode) {
+        db.collection("coupons").doc(booking.loyaltyCouponCode).set({ used: true, voided: true }, { merge: true })
+          .catch(function() {});
+      }
+    }
     return ref.set(payload, { merge: true });
   }).catch(function(err) { console.warn("Punch revert failed (non-critical):", err); });
 }
 
+// ── COUPONS (shared by loyalty rewards and referral rewards) ──────────────────
+// A coupon is a short, typed-in code the customer redeems themselves via the
+// "Coupon code" field when booking — this is what makes both the loyalty reward
+// and the referral reward feel like a real coupon rather than an invisible
+// automatic discount. Codes live in their own top-level collection, keyed by the
+// code itself, so redemption only ever needs a single public doc-id get() (no
+// querying/listing of other customers' data required).
+function issueCoupon(phoneDigits, kind, amount) {
+  var prefix = kind === "loyalty_free" ? "FREEDETAIL" : "THANKS" + Math.round(amount);
+  var code = prefix + "-" + phoneDigits.slice(-4) + Math.random().toString(36).slice(2, 4).toUpperCase();
+  return db.collection("coupons").doc(code).set({
+    phone: phoneDigits, kind: kind, amount: (kind === "loyalty_free" ? null : amount),
+    used: false, createdAt: new Date().toISOString()
+  }).then(function() { return code; })
+    .catch(function(err) { console.warn("Coupon creation failed (non-critical):", err); return null; });
+}
+
+// Look up a coupon by code — public get-by-id, no query needed. Ownership
+// (does this code belong to the phone number booking right now?) is checked by
+// the caller, since a coupon is only ever redeemable by the customer it was
+// issued to.
+function lookupCoupon(code) {
+  var clean = (code || "").trim().toUpperCase();
+  if (!clean) return Promise.resolve(null);
+  return db.collection("coupons").doc(clean).get()
+    .then(function(doc) { return doc.exists ? Object.assign({ code: clean }, doc.data()) : null; })
+    .catch(function(err) { console.warn("Coupon lookup failed (non-critical):", err); return null; });
+}
+
+// Mark a coupon used (fire-and-forget, called right after a booking that
+// redeemed it is saved) and remove it from the customer's visible list.
+function markCouponUsed(coupon, bookingId) {
+  db.collection("coupons").doc(coupon.code).set(
+    { used: true, usedAt: new Date().toISOString(), usedBookingId: bookingId }, { merge: true }
+  ).catch(function(err) { console.warn("Coupon mark-used failed (non-critical):", err); });
+  var custRef = db.collection("customers").doc(coupon.phone);
+  var payload = coupon.kind === "loyalty_free"
+    ? { loyaltyCouponCode: firebase.firestore.FieldValue.delete() }
+    : { referralCouponCodes: firebase.firestore.FieldValue.arrayRemove(coupon.code) };
+  custRef.set(payload, { merge: true }).catch(function(err) { console.warn("Coupon list update failed (non-critical):", err); });
+}
+
 // ── REFERRAL PROGRAM ────────────────────────────────────────────────────────
-// Only the referral SENDER (the existing customer who shares their code) is ever
-// rewarded, and only after the referral RECEIVER's first detail is actually done
-// — never the receiver, and never for anyone who isn't a genuine first-time
-// customer. Codes live in their own top-level collection, keyed by the code
-// itself, so a brand-new visitor can look one up with a single doc-id get()
-// (allowed by the public rules) without ever needing to query/list the
-// customers collection (which holds PII and isn't publicly queryable).
+// The referral SENDER (the existing customer who shares their code) is rewarded
+// with a redeemable coupon, and only after the referral RECEIVER's first detail
+// is actually done. The RECEIVER also gets the same amount off their own first
+// visit immediately, for using the code in the first place — so both people
+// feel good about it. Never applies to anyone who isn't a genuine first-time
+// customer, and never lets someone use their own code. Codes live in their own
+// top-level collection, keyed by the code itself, so a brand-new visitor can
+// look one up with a single doc-id get() (allowed by the public rules) without
+// ever needing to query/list the customers collection (which holds PII and
+// isn't publicly queryable).
 
 // Lazily generates (and remembers) a customer's shareable code the first time
 // it's needed — first name + last 4 digits of their phone, so it's short and
@@ -2804,17 +2882,19 @@ function lookupReferralSender(code) {
     .catch(function(err) { console.warn("Referral code lookup failed (non-critical):", err); return null; });
 }
 
-// Admin: reverse a booking's not-yet-confirmed referral credit (called right
-// before deleting a booking that was cancelled before the admin marked it
-// "Done" — mirrors revertPunchForBooking above).
-function revertReferralCreditForBooking(booking) {
-  if (!booking || !booking.referralCreditApplied || booking.referralCreditConfirmed) return Promise.resolve();
-  var digits = normalizePhone(booking.phone);
-  if (!isValidUSPhone(digits)) return Promise.resolve();
-  var ref = db.collection("customers").doc(digits);
-  var prev = typeof booking.referralCreditPrevValue === "number" ? booking.referralCreditPrevValue : 0;
-  return ref.set({ referralCredit: prev }, { merge: true })
-    .catch(function(err) { console.warn("Referral credit revert failed (non-critical):", err); });
+// Admin: if a booking that redeemed a coupon gets cancelled/deleted, give the
+// coupon back rather than letting the customer lose it for a visit that never happened.
+function revertCouponForBooking(booking) {
+  if (!booking || !booking.couponCode) return Promise.resolve();
+  return db.collection("coupons").doc(booking.couponCode).set({ used: false }, { merge: true })
+    .then(function() {
+      var custRef = db.collection("customers").doc(normalizePhone(booking.phone));
+      var restore = booking.couponKind === "loyalty_free"
+        ? { loyaltyCouponCode: booking.couponCode }
+        : { referralCouponCodes: firebase.firestore.FieldValue.arrayUnion(booking.couponCode) };
+      return custRef.set(restore, { merge: true });
+    })
+    .catch(function(err) { console.warn("Coupon revert failed (non-critical):", err); });
 }
 
 // ── ANIMATED PUNCH CARD (customer-facing) ──────────────────────────────────
@@ -2826,7 +2906,7 @@ function closePunchCardAnimation() {
   if (el) el.remove();
 }
 
-function showPunchCardAnimation(prevCount, isFreeReward) {
+function showPunchCardAnimation(prevCount, cardComplete) {
   closePunchCardAnimation();
 
   var backdrop = document.createElement("div");
@@ -2859,7 +2939,7 @@ function showPunchCardAnimation(prevCount, isFreeReward) {
     slot.appendChild(num);
 
     var alreadyEarned = i < prevCount;
-    var isNewPunch = !isFreeReward && i === prevCount;
+    var isNewPunch = i === prevCount;
 
     if (alreadyEarned || isNewPunch) {
       slot.classList.add("earned");
@@ -2879,17 +2959,17 @@ function showPunchCardAnimation(prevCount, isFreeReward) {
 
   var msg = document.createElement("div");
   msg.className = "punch-card-msg";
-  if (isFreeReward) {
+  if (cardComplete) {
     var stamp = document.createElement("span");
     stamp.className = "punch-free-stamp";
-    stamp.textContent = "FREE!";
+    stamp.textContent = "EARNED!";
     msg.appendChild(stamp);
-    msg.appendChild(document.createTextNode(" Your card is full — this Full Detail is on the house."));
+    msg.appendChild(document.createTextNode(" Your card is full — check your Welcome Back page for your free-detail coupon code."));
   } else {
     var remaining = 10 - (prevCount + 1);
     msg.textContent = remaining > 0
-      ? (remaining + " more Full Detail" + (remaining === 1 ? "" : "s") + " and your next one is FREE!")
-      : "That's 10! Your next Full Detail is FREE.";
+      ? (remaining + " more Full Detail" + (remaining === 1 ? "" : "s") + " and you'll earn a free-detail coupon!")
+      : "That's 10! You just earned a free-detail coupon.";
   }
   card.appendChild(msg);
 
@@ -3287,9 +3367,9 @@ function renderAdminBookings() {
       if (bPlan) planTag = " · 🔁 " + bPlan.label + (b.isRecurringOccurrence ? " (auto)" : "");
     }
     label.textContent = (b.dateLabel || b.dateKey) + " · " + (b.name || "?") + planTag +
-      (b.punchApplied ? " · 🎫 " + (b.isFreeReward ? "FREE" : ((b.punchPrevValue || 0) + 1) + "/10") + (b.punchConfirmed ? " ✓" : "") : "") +
-      (b.referralApplied ? " · 🎁 referral" + (b.referralConfirmed ? " ✓" : "") : "") +
-      (b.referralCreditApplied ? " · 🎁 $" + b.referralCreditApplied + " credit used" : "");
+      (b.punchApplied ? " · 🎫 " + (b.cardCompleted ? "CARD COMPLETE" : ((b.punchPrevValue || 0) + 1) + "/10") + (b.punchConfirmed ? " ✓" : "") : "") +
+      (b.referralApplied ? " · 🎁 referral (" + b.referralSenderPhone + ")" + (b.referralConfirmed ? " ✓" : "") : "") +
+      (b.couponCode ? " · 🎟️ coupon " + b.couponCode : "");
     label.title = "Click to edit";
     label.onclick = function() { openBookingEditor(b); };
     var statusTag = document.createElement("div"); statusTag.className = "admin-list-item-status";
@@ -3311,7 +3391,7 @@ function renderAdminBookings() {
     var btn = document.createElement("button"); btn.className = "admin-del"; btn.textContent = "Del";
     btn.onclick = function() {
       row.remove();
-      Promise.all([revertPunchForBooking(b), revertReferralCreditForBooking(b)]).then(function() {
+      Promise.all([revertPunchForBooking(b), revertCouponForBooking(b)]).then(function() {
         return deleteBookingRecord(bid);
       }).catch(function(e) {
         alert("Delete failed: " + (e.code || e.message) + "\n\nUpdate your Firestore rules first (see admin panel).");
@@ -3512,7 +3592,7 @@ function renderCalDetail() {
         if (calPlan) calPlanTag = " · 🔁 " + calPlan.label + (b.isRecurringOccurrence ? " (auto)" : "");
       }
       info.textContent = (b.name || "?") + " · " + (b.service || "") + calPlanTag +
-        (b.punchApplied ? " · 🎫 " + (b.isFreeReward ? "FREE" : ((b.punchPrevValue || 0) + 1) + "/10") + (b.punchConfirmed ? " ✓" : "") : "") +
+        (b.punchApplied ? " · 🎫 " + (b.cardCompleted ? "CARD COMPLETE" : ((b.punchPrevValue || 0) + 1) + "/10") + (b.punchConfirmed ? " ✓" : "") : "") +
         (b.referralApplied ? " · 🎁 referral" + (b.referralConfirmed ? " ✓" : "") : "") +
         " · 🔧 " + (b.status || STATUS_STAGES[0]);
       info.style.cssText = "overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer";
@@ -3530,7 +3610,7 @@ function renderCalDetail() {
       var bid = b.id;
       var del = document.createElement("button"); del.className = "admin-del"; del.textContent = "Del";
       del.onclick = function() {
-        Promise.all([revertPunchForBooking(b), revertReferralCreditForBooking(b)]).then(function() {
+        Promise.all([revertPunchForBooking(b), revertCouponForBooking(b)]).then(function() {
           return deleteBookingRecord(bid);
         }).catch(function(e) {
           alert("Delete failed: " + (e.code || e.message) + "\n\nUpdate your Firestore rules — see admin panel.");
@@ -3714,13 +3794,15 @@ function renderStatusModal(booking) {
   }
 
   // ── REFERRAL: this booking used someone's referral code. The referring
-  // customer is only ever credited once THIS job (the referral receiver's
-  // first detail) is confirmed done — never before, and never the receiver.
+  // customer is only ever rewarded once THIS job (the referral receiver's
+  // first detail) is confirmed done — never before, and never the receiver
+  // (the receiver already got their own discount automatically at booking time).
   if (booking.referralApplied) {
     if (booking.referralConfirmed) {
       var refDone = document.createElement("div");
       refDone.style.cssText = "font-size:.78rem;color:var(--teal);font-weight:700;margin-top:8px";
-      refDone.textContent = "🎁 Referral reward credited — $" + (booking.referralRewardAmount != null ? booking.referralRewardAmount : appSettings.referralReward);
+      refDone.textContent = "🎁 Referral coupon issued to sender — $" + (booking.referralRewardAmount != null ? booking.referralRewardAmount : appSettings.referralReward) +
+        (booking.referralRewardCouponCode ? " (" + booking.referralRewardCouponCode + ")" : "");
       punchEl.appendChild(refDone);
     } else {
       var refBtn = document.createElement("button");
@@ -3728,26 +3810,31 @@ function renderStatusModal(booking) {
       var rewardAmt = appSettings.referralReward || 0;
       refBtn.style.cssText = "width:100%;padding:12px 14px;border-radius:9px;font-size:.85rem;font-family:'DM Sans',sans-serif;font-weight:700;cursor:pointer;margin-top:8px;" +
         "border:1.5px solid var(--teal);background:var(--cream);color:var(--teal);";
-      refBtn.textContent = "🎁 Mark Done — credit $" + rewardAmt + " referral reward";
+      refBtn.textContent = "🎁 Mark Done — issue $" + rewardAmt + " referral coupon";
       refBtn.onclick = function() {
         var msg = document.getElementById("status-modal-msg");
         refBtn.disabled = true; refBtn.textContent = "Saving…";
         msg.textContent = "Saving…";
-        db.collection("customers").doc(booking.referralSenderPhone).set(
-          { referralCredit: firebase.firestore.FieldValue.increment(rewardAmt) }, { merge: true }
-        ).then(function() {
-          return db.collection("bookings").doc(booking.id).update({
-            referralConfirmed: true, referralRewardAmount: rewardAmt, referralConfirmedAt: new Date().toISOString()
-          });
-        }).then(function() {
+        issueCoupon(booking.referralSenderPhone, "referral", rewardAmt).then(function(code) {
+          if (!code) return Promise.reject(new Error("Coupon creation failed"));
+          return db.collection("customers").doc(booking.referralSenderPhone).set(
+            { referralCouponCodes: firebase.firestore.FieldValue.arrayUnion(code) }, { merge: true }
+          ).then(function() {
+            return db.collection("bookings").doc(booking.id).update({
+              referralConfirmed: true, referralRewardAmount: rewardAmt, referralRewardCouponCode: code,
+              referralConfirmedAt: new Date().toISOString()
+            });
+          }).then(function() { return code; });
+        }).then(function(code) {
           booking.referralConfirmed = true;
           booking.referralRewardAmount = rewardAmt;
+          booking.referralRewardCouponCode = code;
           renderStatusModal(booking);
           msg.textContent = "✓ Saved";
           setTimeout(function() { if (msg.textContent === "✓ Saved") msg.textContent = ""; }, 1400);
         }).catch(function(e) {
           msg.textContent = "Failed: " + (e.code || e.message);
-          refBtn.disabled = false; refBtn.textContent = "🎁 Mark Done — credit $" + rewardAmt + " referral reward";
+          refBtn.disabled = false; refBtn.textContent = "🎁 Mark Done — issue $" + rewardAmt + " referral coupon";
         });
       };
       punchEl.appendChild(refBtn);
@@ -3827,15 +3914,17 @@ function openSms(b) {
   lines.push("Vehicle: " + b.car, "Service: " + b.service, "Date: " + b.dateLabel);
   if (b.notes)   lines.push("Notes: " + b.notes);
 
-  // Referral: a code was used to book this (first-time) customer — reward the
-  // referring customer once this job is actually done (Status → Mark Done).
+  // Referral: a code was used to book this (first-time) customer — the
+  // receiver's own discount is below, and the referring customer gets rewarded
+  // once this job is actually done (Status → Mark Done).
   if (b.referralApplied) {
-    lines.push("🎁 Referral code used: " + b.referralCodeUsed + " — reward the referring customer once this job is marked Done.");
+    lines.push("🎁 Referral code used: " + b.referralCodeUsed + " — apply $" + b.referralReceiverDiscount + " off this visit for the new customer. Reward the referring customer once this job is marked Done.");
   }
-  // Referral credit: this customer already earned a reward from a friend they
-  // referred — apply it manually to this visit's price.
-  if (b.referralCreditApplied) {
-    lines.push("🎁 Referral credit to apply: $" + b.referralCreditApplied + " off this visit.");
+  // Coupon: this customer redeemed an earned loyalty or referral coupon — honor it on this visit.
+  if (b.couponCode) {
+    lines.push(b.couponKind === "loyalty_free"
+      ? "🎟️ Coupon redeemed: " + b.couponCode + " — FREE Full Detail."
+      : "🎟️ Coupon redeemed: " + b.couponCode + " — $" + b.couponAmount + " off this visit.");
   }
 
   // If a deal was applied, look it up and include human-readable deal info + discounted price
@@ -3955,6 +4044,67 @@ function renderWelcomeAppointment(profile) {
   });
 }
 
+// Renders the loyalty-card status line, the shareable referral code, and the
+// live list of redeemable coupons on the Welcome Back page. Pulled out of
+// showHomeWelcome() so it can also be re-run right after a booking that just
+// earned or spent a coupon, without a full page reload.
+function renderLoyaltyAndCoupons(profile, phoneDigits) {
+  var punchStatusEl = document.getElementById("qb-punch-status");
+  if (profile.loyaltyUsed && profile.loyaltyCouponCode) {
+    punchStatusEl.textContent = "🎉 Your loyalty card is full — grab your free-detail coupon in Your Coupons below!";
+  } else if (profile.loyaltyUsed) {
+    punchStatusEl.textContent = "🎫 You've already redeemed your free Full Detail — thanks for being a loyal customer!";
+  } else {
+    var punches = typeof profile.punches === "number" ? profile.punches : 0;
+    punchStatusEl.textContent =
+      "🎫 Full Detail loyalty card: " + punches + "/10 — " + (10 - punches) + " more and you'll earn a free-detail coupon!";
+  }
+
+  // Refer a Friend — show (or lazily generate) this customer's shareable code.
+  var rewardAmt = appSettings.referralReward || 20;
+  document.getElementById("qb-referral-reward-amount-1").textContent = "$" + rewardAmt;
+  document.getElementById("qb-referral-reward-amount-2").textContent = "$" + rewardAmt;
+  var referralCodeEl = document.getElementById("qb-referral-code");
+  referralCodeEl.textContent = profile.referralCode || "…";
+  ensureReferralCode(phoneDigits, profile).then(function(code) {
+    if (code) referralCodeEl.textContent = code;
+  });
+
+  // Your Coupons — any earned-but-unused loyalty/referral coupons, shown with a
+  // one-tap "Use this" button that drops the code straight into the Coupon
+  // code field below, so redeeming one doesn't require re-typing anything.
+  var couponsCard = document.getElementById("qb-coupons-card");
+  var couponsList = document.getElementById("qb-coupons-list");
+  couponsList.innerHTML = "";
+  var couponCodes = [];
+  if (profile.loyaltyCouponCode) couponCodes.push({ code: profile.loyaltyCouponCode, label: "🎉 FREE Full Detail" });
+  (profile.referralCouponCodes || []).forEach(function(code) {
+    couponCodes.push({ code: code, label: "🎁 $" + rewardAmt + " off your next visit" });
+  });
+  if (couponCodes.length) {
+    couponsCard.style.display = "";
+    couponCodes.forEach(function(c) {
+      var row = document.createElement("div");
+      row.style.cssText = "display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:var(--cream);border:1.5px solid var(--gold);border-radius:9px;padding:10px 12px";
+      var info = document.createElement("div");
+      info.innerHTML = "<div style='font-family:\"Bebas Neue\",sans-serif;font-size:1.1rem;letter-spacing:.05em;color:var(--gold2)'>" + c.code + "</div><div style='font-size:.78rem;color:var(--muted)'>" + c.label + "</div>";
+      var useBtn = document.createElement("button");
+      useBtn.type = "button";
+      useBtn.className = "admin-btn";
+      useBtn.style.padding = "7px 14px";
+      useBtn.textContent = "Use this";
+      useBtn.onclick = function() {
+        document.getElementById("qb-coupon-code").value = c.code;
+        document.getElementById("qb-coupon-code").scrollIntoView({ behavior: "smooth", block: "center" });
+      };
+      row.appendChild(info); row.appendChild(useBtn);
+      couponsList.appendChild(row);
+    });
+  } else {
+    couponsCard.style.display = "none";
+  }
+}
+
 function showHomeWelcome(profile, phoneDigits) {
   _recognizedProfile = profile;
   _recognizedPhone = phoneDigits;
@@ -3971,28 +4121,7 @@ function showHomeWelcome(profile, phoneDigits) {
   document.getElementById("qb-customer-address").value = profile.address || "";
   document.getElementById("qb-notes").value = "";
 
-  var punchStatusEl = document.getElementById("qb-punch-status");
-  if (profile.loyaltyUsed) {
-    punchStatusEl.textContent = "🎫 You've already redeemed your free Full Detail — thanks for being a loyal customer!";
-  } else {
-    var punches = typeof profile.punches === "number" ? profile.punches : 0;
-    punchStatusEl.textContent =
-      "🎫 Full Detail loyalty card: " + punches + "/10 — " + (10 - punches) + " more for a free one!";
-  }
-
-  // Refer a Friend — show (or lazily generate) this customer's shareable code,
-  // plus any credit they've already earned from friends who've since been detailed.
-  document.getElementById("qb-referral-reward-amount").textContent = "$" + (appSettings.referralReward || 20);
-  var referralCreditEl = document.getElementById("qb-referral-credit-status");
-  var credit = (typeof profile.referralCredit === "number") ? profile.referralCredit : 0;
-  referralCreditEl.textContent = credit > 0
-    ? "🎉 You have $" + credit + " in referral credit — it'll be applied automatically the next time you book below."
-    : "No referral credit yet — refer a friend above to start earning!";
-  var referralCodeEl = document.getElementById("qb-referral-code");
-  referralCodeEl.textContent = profile.referralCode || "…";
-  ensureReferralCode(phoneDigits, profile).then(function(code) {
-    if (code) referralCodeEl.textContent = code;
-  });
+  renderLoyaltyAndCoupons(profile, phoneDigits);
 
   clearStatus("qb-status");
   updateBookingDropdown();
@@ -4124,43 +4253,49 @@ function submitBookingCore(fields, statusId, btn) {
   // afterward.
   var isFullDetail = fields.service === FULL_DETAIL_KEY && !fields.plan;
   var enteredReferralCode = (fields.referralCode || "").trim().toUpperCase();
+  var enteredCouponCode   = (fields.couponCode || "").trim().toUpperCase();
 
   Promise.all([
     isFullDetail ? computePunchInfo(phoneDigits) : Promise.resolve(null),
     getCustomerProfile(phoneDigits),
-    enteredReferralCode ? lookupReferralSender(enteredReferralCode) : Promise.resolve(null)
+    enteredReferralCode ? lookupReferralSender(enteredReferralCode) : Promise.resolve(null),
+    enteredCouponCode ? lookupCoupon(enteredCouponCode) : Promise.resolve(null)
   ]).then(function(results) {
     var punchInfo            = results[0];
     var existingProfile      = results[1];
     var referralSenderPhone  = results[2];
+    var coupon               = results[3];
 
     if (punchInfo) {
       booking.punchApplied   = true;
       booking.punchConfirmed = false;
       booking.punchPrevValue = punchInfo.prev;
-      booking.isFreeReward   = punchInfo.isFreeReward;
+      booking.cardCompleted  = punchInfo.cardComplete;
     }
 
-    // REFERRAL (received): only ever valid for a genuine first-time customer —
-    // no existing profile, or one that's never actually completed a booking —
-    // and never lets someone redeem their own code. The sender isn't rewarded
-    // here; that only happens once the admin confirms THIS job is done.
+    // REFERRAL: only ever valid for a genuine first-time customer — no existing
+    // profile, or one that's never actually completed a booking — and never lets
+    // someone redeem their own code. BOTH people benefit: the receiver (this
+    // booking) gets the same amount off right now, and the sender gets a
+    // redeemable coupon once the admin confirms THIS job is done.
     var isFirstTimeCustomer = !existingProfile || !existingProfile.bookingCount;
+    var referralRewardAmount = appSettings.referralReward || 0;
     if (enteredReferralCode && referralSenderPhone && isFirstTimeCustomer && referralSenderPhone !== phoneDigits) {
-      booking.referralCodeUsed    = enteredReferralCode;
-      booking.referralSenderPhone = referralSenderPhone;
-      booking.referralApplied     = true;
-      booking.referralConfirmed   = false;
+      booking.referralCodeUsed      = enteredReferralCode;
+      booking.referralSenderPhone   = referralSenderPhone;
+      booking.referralApplied       = true;
+      booking.referralConfirmed     = false;
+      booking.referralReceiverDiscount = referralRewardAmount;
     }
 
-    // REFERRAL CREDIT (redeemed): if this phone already earned credit from a
-    // friend they referred whose detail has since been confirmed done, apply
-    // the whole balance to this booking now and clear it.
-    var creditAvailable = (existingProfile && typeof existingProfile.referralCredit === "number") ? existingProfile.referralCredit : 0;
-    if (creditAvailable > 0) {
-      booking.referralCreditApplied   = creditAvailable;
-      booking.referralCreditPrevValue = creditAvailable;
-      booking.referralCreditConfirmed = false;
+    // COUPON: redeeming a previously-earned loyalty or referral coupon. Only
+    // valid if it exists, isn't already used, and actually belongs to the phone
+    // number booking right now.
+    var couponValid = coupon && !coupon.used && coupon.phone === phoneDigits;
+    if (couponValid) {
+      booking.couponCode   = coupon.code;
+      booking.couponKind   = coupon.kind;
+      booking.couponAmount = coupon.amount; // null for a free (100%-off) loyalty coupon
     }
 
     createBookingRecord(booking)
@@ -4170,18 +4305,24 @@ function submitBookingCore(fields, statusId, btn) {
         rememberPhone(fields.phone);
         var msg = "Booked! Opening your messages — just hit send to confirm. Just come back to this site anytime to see your appointment status instantly.";
         if (punchInfo) {
-          msg = punchInfo.isFreeReward
-            ? "Booked! 🎉 Your loyalty card is full — this Full Detail is FREE! Opening your messages…"
+          msg = punchInfo.cardComplete
+            ? "Booked! 🎉 Your loyalty card is full — check your Welcome Back page for your free-detail coupon code! Opening your messages…"
             : "Booked! You're now at " + punchInfo.next + "/10 on your Full Detail loyalty card. Opening your messages…";
         }
         if (booking.referralApplied) {
-          msg += " Thanks for using a referral code — your friend gets rewarded once your detail is done!";
+          msg += " 🎁 Thanks for using a referral code — you're getting $" + referralRewardAmount + " off this visit, and your friend gets rewarded once it's done!";
         }
-        if (booking.referralCreditApplied) {
-          msg += " 🎁 Your $" + booking.referralCreditApplied + " referral credit is on this booking — just mention it when you send the text.";
+        if (couponValid) {
+          msg += coupon.kind === "loyalty_free"
+            ? " 🎉 Your free-detail coupon is on this booking!"
+            : " 🎁 Your $" + coupon.amount + " coupon is on this booking!";
         }
         showStatus(statusId, msg, "success");
-        if (punchInfo) showPunchCardAnimation(punchInfo.prev, punchInfo.isFreeReward);
+        if (punchInfo) showPunchCardAnimation(punchInfo.prev, punchInfo.cardComplete);
+        var referralCodeInput = document.getElementById("referral-code");
+        if (referralCodeInput) referralCodeInput.value = "";
+        var couponCodeInput = document.getElementById("qb-coupon-code");
+        if (couponCodeInput) couponCodeInput.value = "";
 
         // Plan selected → also place the future recurring visits on the calendar right
         // away (real /bookings docs, tagged isRecurringOccurrence:true) so the whole
@@ -4198,25 +4339,43 @@ function submitBookingCore(fields, statusId, btn) {
 
         openSms(booking);
         // Create or refresh this customer's quick-book profile — doesn't block the SMS flow above
-        upsertCustomerProfile(phoneDigits, {
-          name: fields.name, car: fields.car, address: fields.address,
-          lastBookingId: booking.id, lastBookingDateKey: booking.dateKey, lastBookingDateLabel: booking.dateLabel
-        }).then(function() {
-          // Booked from the Welcome Back page itself — refresh the appointment
-          // card in place so the new booking shows up instantly, no reload needed.
-          if (statusId === "qb-status") renderWelcomeAppointment({ lastBookingId: booking.id });
-        }).catch(function(err) { console.warn("Customer profile save failed (non-critical):", err); });
+        var profileWrites = [
+          upsertCustomerProfile(phoneDigits, {
+            name: fields.name, car: fields.car, address: fields.address,
+            lastBookingId: booking.id, lastBookingDateKey: booking.dateKey, lastBookingDateLabel: booking.dateLabel
+          })
+        ];
+        if (statusId === "qb-status") renderWelcomeAppointment({ lastBookingId: booking.id });
+
         if (punchInfo) {
           var punchPayload = { punches: punchInfo.next };
-          // One-time perk: once redeemed, this customer's loyalty card is gone
-          // for good — no new card automatically starts back up at 0.
-          if (punchInfo.isFreeReward) punchPayload.loyaltyUsed = true;
-          db.collection("customers").doc(phoneDigits).set(punchPayload, { merge: true })
-            .catch(function(err) { console.warn("Punch save failed (non-critical):", err); });
+          var punchWrite;
+          if (punchInfo.cardComplete) {
+            // One-time perk: card is spent for good, and a redeemable coupon is
+            // issued for whenever they want their free detail.
+            punchPayload.loyaltyUsed = true;
+            punchWrite = issueCoupon(phoneDigits, "loyalty_free", null).then(function(code) {
+              if (!code) return;
+              return db.collection("customers").doc(phoneDigits).set({ loyaltyCouponCode: code }, { merge: true });
+            });
+          }
+          profileWrites.push(
+            db.collection("customers").doc(phoneDigits).set(punchPayload, { merge: true })
+              .then(function() { return punchWrite; })
+              .catch(function(err) { console.warn("Punch save failed (non-critical):", err); })
+          );
         }
-        if (booking.referralCreditApplied) {
-          db.collection("customers").doc(phoneDigits).set({ referralCredit: 0 }, { merge: true })
-            .catch(function(err) { console.warn("Referral credit reset failed (non-critical):", err); });
+        if (couponValid) profileWrites.push(Promise.resolve(markCouponUsed(coupon, booking.id)));
+
+        // Booked from the Welcome Back page itself — refresh the loyalty status,
+        // referral code, and coupon list in place (after the writes above land)
+        // so anything just earned or spent shows up immediately, no reload needed.
+        if (statusId === "qb-status") {
+          Promise.all(profileWrites).then(function() {
+            return getCustomerProfile(phoneDigits);
+          }).then(function(freshProfile) {
+            if (freshProfile) renderLoyaltyAndCoupons(freshProfile, phoneDigits);
+          }).catch(function() {});
         }
       })
       .catch(function(e) {
@@ -4257,7 +4416,8 @@ function handleQuickBookBooking(e) {
     service: document.getElementById("qb-service-type").value,
     dateKey: document.getElementById("qb-booking-date").value,
     plan:    document.getElementById("qb-plan-type").value,
-    notes:   document.getElementById("qb-notes").value.trim()
+    notes:   document.getElementById("qb-notes").value.trim(),
+    couponCode: document.getElementById("qb-coupon-code").value.trim()
   }, "qb-status", document.getElementById("qb-submit-btn"));
 }
 
@@ -5495,19 +5655,48 @@ document.addEventListener("DOMContentLoaded", function() {
     setPriceFormat(this.value).catch(function(e) { alert("Failed to save: " + (e.code || e.message)); });
   });
 
+// Copy text to the clipboard with fallbacks — navigator.clipboard only works in
+// a secure (https) context and isn't available in every mobile browser/webview,
+// so we fall back to the older execCommand trick, and finally to a prompt() the
+// person can copy from by hand, so the button always does *something* useful.
+function copyTextToClipboard(text, onDone) {
+  function legacyFallback() {
+    var ok = false;
+    try {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed";
+      ta.style.top = "-9999px";
+      ta.style.left = "-9999px";
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      ok = document.execCommand("copy");
+      document.body.removeChild(ta);
+    } catch (e) { ok = false; }
+    if (ok) { onDone(true); return; }
+    window.prompt("Copy this to share with your friend:", text);
+    onDone(false);
+  }
+  if (window.isSecureContext && navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function() { onDone(true); }).catch(legacyFallback);
+  } else {
+    legacyFallback();
+  }
+}
+
   var referralCopyBtn = document.getElementById("qb-referral-copy-btn");
   if (referralCopyBtn) {
     referralCopyBtn.addEventListener("click", function() {
       var code = document.getElementById("qb-referral-code").textContent;
       if (!code || code === "—" || code === "…") return;
       var shareText = "Use my code " + code + " for your first mobile detail with Denton Detailing — dentondetailing.com";
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(shareText).then(function() {
-          var orig = referralCopyBtn.textContent;
-          referralCopyBtn.textContent = "Copied!";
-          setTimeout(function() { referralCopyBtn.textContent = orig; }, 1500);
-        }).catch(function() { /* clipboard blocked — button just won't confirm, no harm done */ });
-      }
+      var orig = referralCopyBtn.textContent;
+      copyTextToClipboard(shareText, function(copied) {
+        referralCopyBtn.textContent = copied ? "Copied!" : "Copy it above ↑";
+        setTimeout(function() { referralCopyBtn.textContent = orig; }, 1800);
+      });
     });
   }
 
